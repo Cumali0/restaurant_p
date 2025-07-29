@@ -1,0 +1,43 @@
+body {
+    font-family: 'Heebo', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .nav-link {
+    color: white !important;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.navbar .nav-link.active {
+    color: #ffc107 !important;
+}
+
+/* Button */
+.btn-primary {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: black;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+}
+
+/* Hero Section */
+.hero-section {
+    background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    height: 90vh;
+}
+
+.cumali{
+    width: 1000px;
+}
