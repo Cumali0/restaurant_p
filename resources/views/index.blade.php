@@ -50,9 +50,9 @@
             <div class="col-lg-6 text-center text-lg-start"></div>
             <h1 class="display-3 text-white animated slinderInLeft">Lezzetli Yemeğimizin <br>Tadını Çıkarın</h1>
             <p class="text-white animated slinderInLeft mb-4 p-2">Kalite Paraya Değer </p>
-            <a href="#" class="btn btn-primary py-sm-3 px-sm-5 slinderInLeft">Masa Ayırt</a>
+            <a href="#" class="btn btn-primary py-sm-3 px-sm-5 slinderInLeft" style="width: 150px;">Masa Ayırt</a>
         </div>
-        <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+        <div class="text-center text-end overflow-hidden">
             <img src="img/hero.png" class="img-fluid" width="500px" alt="">
         </div>
     </div>
@@ -67,9 +67,11 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="row g-4">
-            <div class="col-lg-3 col-sm-6 wow fadeInup" data-wow-delay="0.1s">
-                <div class="p-4">
-                    <div class="row g-4">
+
+            <!-- 1. Kutu -->
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item rounded pt-3">
+                    <div class="p-4">
                         <i class="fa fa-3x fa-user-tie text-primary mb-4"></i>
                         <h5>Usta Aşçılar</h5>
                         <p>Yılların tecrübesiyle, damaklarda unutulmaz tatlar yaratıyoruz</p>
@@ -77,7 +79,8 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-sm-6 wow fadeInup">
+            <!-- 2. Kutu -->
+            <div class="col-lg-3 col-sm-6 wow fadeInUp">
                 <div class="service-item rounded pt-3">
                     <div class="p-4">
                         <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
@@ -86,27 +89,33 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-sm-6 wow fadeInup">
+
+            <!-- 3. Kutu -->
+            <div class="col-lg-3 col-sm-6 wow fadeInUp">
                 <div class="service-item rounded pt-3">
                     <div class="p-4">
-                        <i class="fa fa-3x fa-cart-plus  text-primary mb-4"></i>
+                        <i class="fa fa-3x fa-cart-plus text-primary mb-4"></i>
                         <h5>Kaliteli Yemek</h5>
                         <p>Her lokmada tazelik ve özenle hazırlanan eşsiz lezzetler</p>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-sm-6 wow fadeInup">
+
+            <!-- 4. Kutu -->
+            <div class="col-lg-3 col-sm-6 wow fadeInUp">
                 <div class="service-item rounded pt-3">
                     <div class="p-4">
                         <i class="fa fa-3x fa-headset text-primary mb-4"></i>
-                        <h5>7/24 servis</h5>
-                        <p>Kalite lezzetin adresi degilmidir zateno yüzden kaliteli yiyin</p>
+                        <h5>7/24 Servis</h5>
+                        <p>Kalite lezzetin adresi değil midir? O yüzden kaliteli yiyin.</p>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
+
 
 <!--Service Section  End-->
 
@@ -168,7 +177,7 @@
 
 <!--Menu Section State -->
 
-<div class="container --xxl py-5">
+<div class="container py-5">
     <div class="container">
         <div class="text-center wow fadeInup">
             <h5 class="section-title ff-secondary text-center text-primary fw-normal">Yemek Menüsü</h5>
@@ -347,6 +356,7 @@
 <!--Menu Section End -->
 
 <!--Reservation Section Start-->
+
 <div class="container-xxl py-5 px-0 wow fadeInup">
     <div class="row g-0">
         <div class="col-md-6">
@@ -379,21 +389,218 @@
                                 <label for="name">Your Email</label>
                             </div>
                         </div>
-                        div class="col-md-6">
-                        <div class="form floating date" id="date3">
-                            <input type="text" class="form-control" id="email" placeholder="Date & Time" data-target="#date3" data-toggle="datetimpicker" itemid="datetime">
-                            <label for="name">Date & Time</label>
+                        <div class="col-md-6">
+                            <div class="form floating date" id="date3">
+                                <input type="text" class="form-control" id="email" placeholder="Date & Time" data-target="#date3" data-toggle="datetimpicker" itemid="datetime">
+                                <label for="name">Date & Time</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form floating date">
+                                <select class="form-select" id="select1">
+                                    <option value="1">People1</option>
+                                    <option value="2">People2</option>
+                                    <option value="3">People3</option>
+
+                                </select>
+                                <label for="select1">No of People</label>
+
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                        <textarea class="form-control" id="message" placeholder="Special Request" style="height: 100px;">
+
+                                        </textarea>
+                                <label for="message">Special Request</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit">Şimdi rezervasyon yap</button>
                         </div>
                     </div>
+
+
+                </form>
+
             </div>
-
-
-            </form>
-
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="VideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div clas="modal-dialog">
+        <div clas="modal-dialog">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="" class="embed-responsive-item" id="video" allowfullscreen="always" allow="autoplay"></iframe>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+<!--Reservation Section End-->
+
+<!--Team Section Start-->
+
+<div class="container-xxl pt-5 pb-3">
+    <div class="container">
+        <div class="text-center wow fadeInup">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">
+                Ekip Üyeleri
+            </h5>
+            <h1 class="mb-5">Usta Şeflerimiz</h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 wow fadeInup">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="img/team-1.jpg" alt="">
+                    </div>
+                    <h5 class="mb-0">Zafer Şef</h5>
+                    <small>Atama</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInup">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="img/team-2.jpg" alt="">
+
+                    </div>
+                    <h5 class="mb-0">Mehmet Şef</h5>
+                    <small>Atama</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInup">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="img/team-3.jpg" alt="">
+
+                    </div>
+                    <h5 class="mb-0">Soner Şef</h5>
+                    <small>Atama</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInup">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="img/team-4.jpg" alt="">
+
+                    </div>
+                    <h5 class="mb-0">Danilo Şef</h5>
+                    <small>Atama</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<!--Team Section End -->
+
+<!--Fotter Section Start-->
+<div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeInUp">
+    <div class="container py-5">
+        <div class="row g-5">
+
+            <!-- Şirket -->
+            <div class="col-lg-3 col-md-6">
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">ŞİRKET</h4>
+                <a href="" class="btn btn-link">Hakkımızda</a>
+                <a href="" class="btn btn-link">Bize Ulaşın</a>
+                <a href="" class="btn btn-link">Rezarvasyon</a>
+                <a href="" class="btn btn-link">Hakkında</a>
+                <a href="" class="btn btn-link">Takımların & Durumu</a>
+            </div>
+
+            <!-- Bağlantı -->
+            <div class="col-lg-3 col-md-6">
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Bağlantı</h4>
+                <p class="mb-2"><i class="fa fa-map-marker-alt"></i> Merkez : Çarşı Mah. Tabakhane Sok.No:14 Ortahisar / Trabzon</p>
+                <p class="mb-2"><i class="fa fa-phone-alt"></i> Tel :0542 361 78 45</p>
+                <p class="mb-2"><i class="fa fa-envelope me-3"></i> yemek@gmail.com</p>
+                <div class="d-flex pt-2">
+                    <a href="" class="btn btn-outline-light btn-social"><i class="fab fa-twitter"></i></a>
+                    <a href="" class="btn btn-outline-light btn-social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="" class="btn btn-outline-light btn-social"><i class="fab fa-youtube"></i></a>
+                    <a href="" class="btn btn-outline-light btn-social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <!-- Açılış -->
+            <div class="col-lg-3 col-md-6">
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Açılış</h4>
+                <h5 class="text-light fw-normal">Pazartesi - Cumartesi</h5>
+                <p>09:00 - 21:00</p>
+                <h5 class="text-light fw-normal">Pazar</h5>
+                <p>10:00 - 20:00</p>
+            </div>
+
+            <!-- Haber Bülteni -->
+            <div class="col-lg-3 col-md-6">
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Haber Bülteni</h4>
+                <div class="position-relative mx-auto">
+                    <input class="form-control border-primary w-100 py-3 ps-4 pe-5" type="text" placeholder="E-posta adresiniz">
+                    <button class="btn btn-primary py-2 position-absolute top-0 end-0 me-2">Kayıt Ol</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="container">
+        <div class="copyright">
+            <div class="row">
+                <div class="col-md-6 text-center mb-3 mb-md-0 col-lg-12">
+                    <a href="" class="border-bottom">Sitede adınız, tüm haklarınız saklıdır.</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 
