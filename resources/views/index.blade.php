@@ -15,13 +15,14 @@
     <!-- Bootstrap CSS (CDN) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
     <!-- Custom CSS -->
-    <link href="style.css" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
 
 <body>
 <!-- Navbar -->
-<div class="container-xxl position-relative p-0">
+<div class="container position-relative p-0">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
         <a href="#" class="navbar-brand p-0">
             <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Restaurant</h1>
@@ -44,27 +45,28 @@
 </div>
 
 <!-- Hero Section -->
-<div class="container-xxl py-5 bg-dark hero-header mb-5">
+<div class="container-fluid py-5 bg-dark hero-header mb-5">
     <div class="container my-5 py-5">
-        <div class="row align-items-center g-5">
+        <div class="row align-items-center g-5 register-tr">
             <div class="col-lg-6 text-center text-lg-start"></div>
-            <h1 class="display-3 text-white animated slinderInLeft">Lezzetli Yemeğimizin <br>Tadını Çıkarın</h1>
-            <p class="text-white animated slinderInLeft mb-4 p-2">Kalite Paraya Değer </p>
-            <a href="#" class="btn btn-primary py-sm-3 px-sm-5 slinderInLeft" style="width: 150px;">Masa Ayırt</a>
+            <h1 class="display-3 text-white animated slinderInLeft me-2">Lezzetli Yemeğimizin <br>Tadını Çıkarın</h1>
+            <p class="text-white animated slinderInLeft mb-4 p-2 ms-4">Kalite Paraya Değer </p>
+            <a href="#" id="reserveBtn" class="btn btn-primary py-sm-3 px-sm-5 slinderInLeft ms-4" style="width: 20%;">Masa Ayırt</a>
         </div>
-        <div class="text-center text-end overflow-hidden">
-            <img src="img/hero.png" class="img-fluid" width="500px" alt="">
+        <div class="text-center text-lg-end overflow-hidden">
+
+        <img src="{{ asset('img/hero.png') }}" class="img-fluid" width="500px" alt="">
         </div>
     </div>
 </div>
-</div>
-</div>
+
+
 
 <!--navbar & hero Ends-->
 
 <!--Service Section State-->
 
-<div class="container-xxl py-5">
+<div class="container py-5">
     <div class="container">
         <div class="row g-4">
 
@@ -122,22 +124,25 @@
 <!--About Section State -->
 
 
-<div class="container-xxl py-5">
+<div class="container py-5">
     <div class="container">
         <div class="row g-5 align-items-center">
             <div class="col-lg-6">
                 <div class="row g-3">
                     <div class="col-6 text-start">
-                        <img class="img-gluid rounded w-100 wow zoomIn" src="img/about-1.jpg" alt="">
+                        <img class="img-gluid rounded w-100 wow zoomIn" src="{{ asset('img/about-1.jpg') }}" alt="">
                     </div>
                     <div class="col-6 text-start">
-                        <img class="img-gluid rounded w-75 wow zoomIn cumali " src="img/about-2.jpg" style="margin: top 25%;" alt="">
+                        <img class="img-fluid rounded w-75 wow zoomIn cumali" src="{{ asset('img/about-2.jpg') }}" style="margin-top: 25%;" alt="">
+
                     </div>
                     <div class="col-6 text-start">
-                        <img class="img-gluid rounded w-75 wow zoomIn" src="img/about-3.jpg"  alt="">
+                        <img class="img-fluid rounded w-75 wow zoomIn" src="{{ asset('img/about-3.jpg') }}" alt="">
+
                     </div>
                     <div class="col-6 text-start">
-                        <img class="img-gluid rounded w-100 wow zoomIn" src="img/about-4.jpg"  alt="">
+                        <img class="img-fluid rounded w-100 wow zoomIn" src="{{ asset('img/about-4.jpg') }}" alt="">
+
                     </div>
                 </div>
             </div>
@@ -219,7 +224,8 @@
                     <div class="row g-4">
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-1.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-1.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Tavuk Burger</span>
@@ -235,7 +241,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-2.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-2.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Et Burger</span>
@@ -251,7 +258,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-3.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-3.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Pepperoni Pizza</span>
@@ -267,7 +275,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-4.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-4.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Sezar Salata</span>
@@ -283,7 +292,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-5.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-5.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Spaghetti Bolognese</span>
@@ -299,7 +309,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-6.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">>
+                                <img src="{{ asset('img/menu-6.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Mantı</span>
@@ -315,7 +326,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-7.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-7.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Musakka</span>
@@ -331,7 +343,8 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <img src="img/menu-8.jpg" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px">
+                                <img src="{{ asset('img/menu-8.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+
                                 <div class="w-100 d-flex-column text-start ps-4">
                                     <h5 class="d-flex justify-content-between border-bottom pb-2">
                                         <span>Sushi Roll</span>
@@ -357,7 +370,7 @@
 
 <!--Reservation Section Start-->
 
-<div class="container-xxl py-5 px-0 wow fadeInup">
+<div  id="reservation" class="container py-5 px-0 wow fadeInUp">
     <div class="row g-0">
         <div class="col-md-6">
             <div class="video">
@@ -375,52 +388,54 @@
 
                 </h5>
                 <h1 class="text-white mb-4">Online Masa Kaydı</h1>
-                <form action="">
+                <form action="{{ route('rezervasyon.store') }}" method="POST">
+                    @csrf
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="form floating">
-                                <input type="text" class="form-control" id="name" placeholder="Ad">
-                                <label for="name">Your Name</label>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Ad" required>
+                                <label for="name">Ad</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form floating">
-                                <input type="text" class="form-control" id="email" placeholder="Soyad">
-                                <label for="name">Your Email</label>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="surname" name="surname" placeholder="Soyad" required>
+                                <label for="surname">Soyad</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form floating date" id="date3">
-                                <input type="text" class="form-control" id="email" placeholder="Date & Time" data-target="#date3" data-toggle="datetimpicker" itemid="datetime">
-                                <label for="name">Date & Time</label>
+                            <div class="form-floating date" id="date3">
+                                <input type="text" class="form-control" id="datetimepicker" name="datetime" placeholder="Date & Time" required>
+                                <label for="datetimepicker">Tarih & Saat</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form floating date">
-                                <select class="form-select" id="select1">
-                                    <option value="1">People1</option>
-                                    <option value="2">People2</option>
-                                    <option value="3">People3</option>
-
+                            <div class="form-floating">
+                                <select class="form-select" id="people" name="people" required>
+                                    <option value="1">1 Kişi</option>
+                                    <option value="2">2 Kişi</option>
+                                    <option value="3">3 Kişi</option>
+                                    <option value="4">4 Kişi</option>
+                                    <option value="4">5 Kişi</option>
+                                    <option value="4">6 Kişi</option>
+                                    <option value="4">7 Kişi</option>
+                                    <option value="4">8 Kişi</option>
+                                    <option value="4">9 Kişi</option>
+                                    <option value="4">10 Kişi</option>
                                 </select>
-                                <label for="select1">No of People</label>
-
-                            </div>
-                        </div>
-                        <div>
-                            <div>
-                                        <textarea class="form-control" id="message" placeholder="Special Request" style="height: 100px;">
-
-                                        </textarea>
-                                <label for="message">Special Request</label>
+                                <label for="people">Kişi Sayısı</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <button class="btn btn-primary w-100 py-3" type="submit">Şimdi rezervasyon yap</button>
+                            <div class="form-floating">
+                                <textarea class="form-control" id="message" name="message" placeholder="Özel İstek" style="height: 100px;"></textarea>
+                                <label for="message">Özel İstek</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit">Şimdi Rezervasyon Yap</button>
                         </div>
                     </div>
-
-
                 </form>
 
             </div>
@@ -429,8 +444,8 @@
 </div>
 
 <div class="modal fade" id="VideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div clas="modal-dialog">
-        <div clas="modal-dialog">
+    <div class="modal-dialog">
+        <div class="modal-dialog">
             <div class="modal-content rounded-0">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
@@ -454,7 +469,7 @@
 
 <!--Team Section Start-->
 
-<div class="container-xxl pt-5 pb-3">
+<div class="container pt-5 pb-3">
     <div class="container">
         <div class="text-center wow fadeInup">
             <h5 class="section-title ff-secondary text-center text-primary fw-normal">
@@ -463,13 +478,14 @@
             <h1 class="mb-5">Usta Şeflerimiz</h1>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-6 wow fadeInup">
+            <div class="col-lg-3 col-md-6 wow fadeInup register-clove">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-1.jpg" alt="">
+                        <img class="img-fluid" src="{{ asset('img/team-1.jpg') }}" alt="">
+
                     </div>
                     <h5 class="mb-0">Zafer Şef</h5>
-                    <small>Atama</small>
+                    <small>Yardımcı Aşçı</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
@@ -480,11 +496,11 @@
             <div class="col-lg-3 col-md-6 wow fadeInup">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-2.jpg" alt="">
+                        <img class="img-fluid" src="{{ asset('img/team-2.jpg') }}" alt="">
 
                     </div>
                     <h5 class="mb-0">Mehmet Şef</h5>
-                    <small>Atama</small>
+                    <small>Aşçı</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
@@ -497,11 +513,11 @@
             <div class="col-lg-3 col-md-6 wow fadeInup">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-3.jpg" alt="">
+                        <img class="img-fluid" src="{{ asset('img/team-3.jpg') }}" alt="">
 
                     </div>
                     <h5 class="mb-0">Soner Şef</h5>
-                    <small>Atama</small>
+                    <small>Baş Aşçı</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
@@ -514,11 +530,12 @@
             <div class="col-lg-3 col-md-6 wow fadeInup">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-4.jpg" alt="">
+                        <img class="img-fluid" src="{{ asset('img/team-4.jpg') }}" alt="">
+
 
                     </div>
                     <h5 class="mb-0">Danilo Şef</h5>
-                    <small>Atama</small>
+                    <small>Gurme</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
@@ -546,7 +563,7 @@
 
             <!-- Şirket -->
             <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">ŞİRKET</h4>
+                <h4 id="company-title"  class="section-title ff-secondary text-start text-primary fw-normal mb-4">ŞİRKET</h4>
                 <a href="" class="btn btn-link">Hakkımızda</a>
                 <a href="" class="btn btn-link">Bize Ulaşın</a>
                 <a href="" class="btn btn-link">Rezarvasyon</a>
@@ -556,7 +573,7 @@
 
             <!-- Bağlantı -->
             <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Bağlantı</h4>
+                <h4  id="company-title"  class="section-title ff-secondary text-start text-primary fw-normal mb-4">Bağlantı</h4>
                 <p class="mb-2"><i class="fa fa-map-marker-alt"></i> Merkez : Çarşı Mah. Tabakhane Sok.No:14 Ortahisar / Trabzon</p>
                 <p class="mb-2"><i class="fa fa-phone-alt"></i> Tel :0542 361 78 45</p>
                 <p class="mb-2"><i class="fa fa-envelope me-3"></i> yemek@gmail.com</p>
@@ -569,8 +586,8 @@
             </div>
 
             <!-- Açılış -->
-            <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Açılış</h4>
+            <div  class="col-lg-3 col-md-6">
+                <h4 id="company-title"  class="section-title ff-secondary text-start text-primary fw-normal mb-4">Açılış</h4>
                 <h5 class="text-light fw-normal">Pazartesi - Cumartesi</h5>
                 <p>09:00 - 21:00</p>
                 <h5 class="text-light fw-normal">Pazar</h5>
@@ -578,11 +595,11 @@
             </div>
 
             <!-- Haber Bülteni -->
-            <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Haber Bülteni</h4>
-                <div class="position-relative mx-auto">
-                    <input class="form-control border-primary w-100 py-3 ps-4 pe-5" type="text" placeholder="E-posta adresiniz">
-                    <button class="btn btn-primary py-2 position-absolute top-0 end-0 me-2">Kayıt Ol</button>
+            <div  class="col-lg-3 col-md-6">
+                <h4 id="company-title"  class="section-title ff-secondary text-start text-primary fw-normal mb-4">Haber Bülteni</h4>
+                <div class="input-group mx-auto" style="max-width: 400px;">
+                    <input type="text" class="form-control border-primary py-3 ps-4" placeholder="E-posta adresiniz">
+                    <button class="btn btn-primary px-4">Kayıt Ol</button>
                 </div>
             </div>
 
@@ -602,9 +619,64 @@
 </div>
 
 
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
+
+<script>
+    flatpickr("#datetimepicker", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        locale: "tr",
+
+
+        enable: [
+            function(date) {
+                // Haftanın tüm günleri seçilebilir
+                return (date.getDay() >= 0 && date.getDay() <= 6);
+            }
+        ],
+
+        onReady: function(selectedDates, dateStr, instance) {
+            updateTimeLimits(instance);
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+            updateTimeLimits(instance);
+        }
+
+    });
+    function updateTimeLimits(fpInstance) {
+        const selectedDate = fpInstance.selectedDates[0];
+        if (!selectedDate) {
+            // Tarih seçilmemişse default zaman aralığı
+            fpInstance.set('minTime', "09:00");
+            fpInstance.set('maxTime', "21:00");
+            return;
+        }
+        const day = selectedDate.getDay();
+
+        if(day === 0) {
+            // Pazar: 10:00 - 20:00
+            fpInstance.set('minTime', "10:00");
+            fpInstance.set('maxTime', "20:00");
+        } else {
+            // Pazartesi - Cumartesi: 09:00 - 21:00
+            fpInstance.set('minTime', "09:00");
+            fpInstance.set('maxTime', "21:00");
+        }
+    }
+
+
+</script>
 
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/custom.js') }}"></script>
+
+
 </body>
 </html>

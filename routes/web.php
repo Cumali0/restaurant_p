@@ -1,7 +1,8 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-Route::get('/restaurant', function () {
-    return view('restaurant');
+use App\Http\Controllers\ReservationController;
 
+Route::get('/', function () {
+return view('index'); // resources/views/index.blade.php
 });
+Route::post('/rezervasyon', [ReservationController::class, 'store'])->name('rezervasyon.store');

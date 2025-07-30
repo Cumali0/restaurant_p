@@ -82,7 +82,7 @@
         position: absolute;
         width: 100%;
         top: 0;
-        left: 0;
+        left: -38px;
         z-index: 999;
         background: transparent !important;
     }
@@ -103,6 +103,10 @@
 
 .hero-header img {
     animation: imgRotate 50s linear infinite;
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 @keyframes imgRotate {
@@ -244,7 +248,9 @@
     transform: scale(1.1);
 }
 .team-item .btn {
-    border-radius: 38px 38px 0 0;
+    width: 42px;
+    height: 38px;
+    border-radius: 50% !important;
 }
 
 /*** Footer ***/
@@ -382,3 +388,20 @@
     padding: 5px;
 }
 
+#company-title {
+    color: white !important;
+}
+
+.register-btn{
+    width: 93px;
+    height: 57px;
+}
+
+.register-clove{
+    height: 455px;
+}
+
+.register-tr{
+
+    height: 50px;
+}
