@@ -21,4 +21,30 @@ class ReservationController extends Controller
 
         return redirect()->back()->with('success', 'Rezervasyonunuz başarıyla alındı!');
     }
+
+    // Admin paneli için rezervasyonları listele
+    public function index()
+    {
+        $reservations = Reservation::orderBy('datetime', 'desc')->get();
+        return view('admin.reservations.index', compact('reservations'));
+    }
+
+    // Admin tarafından rezervasyonu onayla
+    public function approve($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $reservation->status = 'approved';
+        $reservation->save();
+
+        return redirect()->back()->with('success', 'Rezervasyon onaylandı.');
+    }
+
+    // Admin tarafından rezervasyonu sil
+    public function destroy($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $reservation->delete();
+
+        return redirect()->back()->with('success', 'Rezervasyon silindi.');
+    }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('datetime');
             $table->integer('people');
             $table->text('message')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
