@@ -4,7 +4,7 @@
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="veiwport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responsive dahsboard using HTML CSS and Javascript </title>
 
 
@@ -26,7 +26,7 @@
     <aside>
         <div class="top">
             <div class="logo">
-                <img src="../../../img/logo.png">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo">
                 <h2>EGA <span class="danger">TOR</span></h2>
             </div>
             <div class="close" id="close-btn">
@@ -165,7 +165,7 @@
         <!--------------------END OF INSIGHTS-------------->
 
         <div class="recent-orders">
-            <h2>Recennt Orders</h2>
+            <h2>Recent Orders</h2>
             <table>
                 <thead>
                 <tr>
@@ -208,12 +208,12 @@
             </div>
             <div class="profile">
                 <div class="info">
-                <p>Hey, <b>Daniel</b> </p>
+                <p>Hey, <b>Tom</b> </p>
                 <small class="text-muted">Admin</small>
             </div>
 
             <div class="profile-photo">
-                <img src="../../../img/profile-photo.jpg">
+                <img src="{{ asset('img/profile-photo.jpg') }}" alt="Profile Photo">
             </div>
         </div>
         </div>
@@ -223,7 +223,8 @@
                 <div class="updates">
                     <div class="update">
                         <div class="profile-photo">
-                            <img src="../../../img/profile-1.jpg">
+                            <img src="{{ asset('img/profile-1.jpg') }}" alt="Profile 1">
+
                         </div>
                         <div class="message">
                             <p> <b>Dexter Morgan</b> Tonight's the night..  </p>
@@ -234,7 +235,8 @@
 
                     <div class="update">
                         <div class="profile-photo">
-                            <img src="../../../img/profile-2.jpg">
+                            <img src="{{ asset('img/profile-2.jpg') }}" alt="Profile 2">
+
                         </div>
                         <div class="message">
                             <p> <b>John Snow</b> Telling the Truth Is Doing the Right Thing, Even Though It Is Not Always Easy.  </p>
@@ -245,7 +247,8 @@
 
                     <div class="update">
                         <div class="profile-photo">
-                            <img src="../../../img/profile-3.jpg">
+                            <img src="{{ asset('img/profile-3.jpg') }}" alt="Profile 3">
+
                         </div>
                         <div class="message">
                             <p> <b>Tony Stark</b> The truth is... I am Iron Man  </p>
@@ -313,8 +316,10 @@
 </div>
 
 
-    <script src="../../../public/admin/js/order.js"></script>
-    <script src="../../../public/admin/js/index.js"></script>
+    <script src="{{ asset('admin/js/order.js') }}"></script>
+    <script src="{{ asset('admin/js/index.js') }}"></script>
+
+
 </body>
 
 </html>
