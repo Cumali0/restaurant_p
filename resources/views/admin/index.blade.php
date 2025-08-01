@@ -199,7 +199,7 @@
     <div class="right">
         <div class="top">
             <button id="menu-btn">
-            <span class="material-icons-sharp">menu</span>
+                <span class="material-icons-sharp">menu</span>
             </button>
             <div class="theme-toggler">
                 <span class="material-icons-sharp active">light_mode</span>
@@ -208,56 +208,56 @@
             </div>
             <div class="profile">
                 <div class="info">
-                <p>Hey, <b>Tom</b> </p>
-                <small class="text-muted">Admin</small>
-            </div>
+                    <p>Hey, <b>Tom</b> </p>
+                    <small class="text-muted">Admin</small>
+                </div>
 
-            <div class="profile-photo">
-                <img src="{{ asset('img/profile-photo.jpg') }}" alt="Profile Photo">
-            </div>
-        </div>
-        </div>
-        <!-----END OF TOP  ------->
-            <div class="recent-updates">
-                    <h2>Recent Updates</h2>
-                <div class="updates">
-                    <div class="update">
-                        <div class="profile-photo">
-                            <img src="{{ asset('img/profile-1.jpg') }}" alt="Profile 1">
-
-                        </div>
-                        <div class="message">
-                            <p> <b>Dexter Morgan</b> Tonight's the night..  </p>
-                            <small class="text-muted">2 Minutrs Ago</small>
-                        </div>
-
-                    </div>
-
-                    <div class="update">
-                        <div class="profile-photo">
-                            <img src="{{ asset('img/profile-2.jpg') }}" alt="Profile 2">
-
-                        </div>
-                        <div class="message">
-                            <p> <b>John Snow</b> Telling the Truth Is Doing the Right Thing, Even Though It Is Not Always Easy.  </p>
-                            <small class="text-muted">49 Minutrs Ago</small>
-                        </div>
-
-                    </div>
-
-                    <div class="update">
-                        <div class="profile-photo">
-                            <img src="{{ asset('img/profile-3.jpg') }}" alt="Profile 3">
-
-                        </div>
-                        <div class="message">
-                            <p> <b>Tony Stark</b> The truth is... I am Iron Man  </p>
-                            <small class="text-muted">30 Minutrs Ago</small>
-                        </div>
-
-                    </div>
+                <div class="profile-photo">
+                    <img src="{{ asset('img/profile-photo.jpg') }}" alt="Profile Photo">
                 </div>
             </div>
+        </div>
+        <!-----END OF TOP  ------->
+        <div class="recent-updates">
+            <h2>Recent Updates</h2>
+            <div class="updates">
+                <div class="update">
+                    <div class="profile-photo">
+                        <img src="{{ asset('img/profile-1.jpg') }}" alt="Profile 1">
+
+                    </div>
+                    <div class="message">
+                        <p> <b>Dexter Morgan</b> Tonight's the night..  </p>
+                        <small class="text-muted">2 Minutrs Ago</small>
+                    </div>
+
+                </div>
+
+                <div class="update">
+                    <div class="profile-photo">
+                        <img src="{{ asset('img/profile-2.jpg') }}" alt="Profile 2">
+
+                    </div>
+                    <div class="message">
+                        <p> <b>John Snow</b> Telling the Truth Is Doing the Right Thing, Even Though It Is Not Always Easy.  </p>
+                        <small class="text-muted">49 Minutrs Ago</small>
+                    </div>
+
+                </div>
+
+                <div class="update">
+                    <div class="profile-photo">
+                        <img src="{{ asset('img/profile-3.jpg') }}" alt="Profile 3">
+
+                    </div>
+                    <div class="message">
+                        <p> <b>Tony Stark</b> The truth is... I am Iron Man  </p>
+                        <small class="text-muted">30 Minutrs Ago</small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
         <!-------------------END OF RECENT UPDATES ------------------>
 
@@ -316,8 +316,8 @@
 </div>
 
 
-    <script src="{{ asset('admin/js/order.js') }}"></script>
-    <script src="{{ asset('admin/js/index.js') }}"></script>
+<script src="{{ asset('admin/js/order.js') }}"></script>
+<script src="{{ asset('admin/js/index.js') }}"></script>
 
 
 </body>
