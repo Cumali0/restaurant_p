@@ -2,9 +2,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
 
+
 Route::get('/', function () {
 return view('index'); // resources/views/index.blade.php
 });
+
+Route::get('/admin', function () {
+    return view('admin.index');
+});
+
+
 Route::post('/rezervasyon', [ReservationController::class, 'store'])->name('rezervasyon.store');
 
 Route::prefix('admin')->group(function () {
