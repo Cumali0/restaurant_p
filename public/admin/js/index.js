@@ -19,7 +19,9 @@ themeToggle.addEventListener('click', () => {
     themeToggle.querySelector('span:nth-child(2)').classList.toggle('active');
 });
 
+/*
 Orders.forEach(reservation => {
+
     const tr = document.createElement('tr');
     const trContent = `
         <td>${reservation.reservationName}</td>
@@ -37,3 +39,4 @@ Orders.forEach(reservation => {
     document.querySelector('table tbody').appendChild(tr);
 });
 
+*/

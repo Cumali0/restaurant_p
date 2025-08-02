@@ -733,3 +733,150 @@ main .recent-orders a{
         font-size: 2rem;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+/* Rezervasyon tablosu stilleri */
+.recent-orders table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-white);
+    box-shadow: var(--box-shadow);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+}
+
+.recent-orders table th,
+.recent-orders table td {
+    padding: 12px;
+    text-align: center;
+}
+
+.recent-orders table thead {
+    background: var(--color-light);
+}
+
+.recent-orders table tbody tr:hover {
+    background: var(--color-light);
+}
+
+.status.success {
+    color: green;
+    font-weight: bold;
+}
+
+.status.warning {
+    color: orange;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.inline-form {
+    display: inline-block;
+}
+
+.btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 5px;
+    transition: 0.3s;
+}
+
+.btn-approve span {
+    color: green;
+}
+
+.btn-delete span {
+    color: red;
+}
+
+.btn:hover span {
+    transform: scale(1.2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Tablo genel stili */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+}
+
+/* Başlık hücreleri */
+table thead tr {
+    background-color: #007BFF; /* Mavi başlık */
+    color: white;
+    text-align: left;
+}
+
+/* Başlık hücre kenarlıkları */
+table thead th {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Veri hücreleri */
+table tbody td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Satır arka plan renkleri: çift satırlar */
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Buton stilleri */
+button {
+    padding: 5px 10px;
+    margin: 0 3px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+/* Approve butonu (onayla) */
+button[type="submit"]:not([formmethod="delete"]) {
+    background-color: #28a745;
+    color: white;
+}
+button[type="submit"]:not([formmethod="delete"]):hover {
+    background-color: #218838;
+}
+
+/* Delete butonu (sil) */
+button[formmethod="delete"], button[type="submit"][formmethod="delete"] {
+    background-color: #dc3545;
+    color: white;
+}
+button[formmethod="delete"]:hover, button[type="submit"][formmethod="delete"]:hover {
+    background-color: #c82333;
+}

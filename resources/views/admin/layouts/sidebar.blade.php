@@ -1,15 +1,16 @@
+
 <aside>
     <div class="top">
         <div class="logo">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo" />
             <h2>EGA <span class="danger">TOR</span></h2>
         </div>
         <div class="close" id="close-btn">
             <span class="material-icons-sharp">close</span>
         </div>
     </div>
-    <div class="sidebar">
 
+    <div class="sidebar">
         <a href="#">
             <span class="material-icons-sharp">grid_view</span>
             <h3>Dashboard</h3>
@@ -20,11 +21,10 @@
             <h3>Customers</h3>
         </a>
 
-        <a href="#">
+        <a href="{{ route('reservations.index') }}">
             <span class="material-icons-sharp">receipt_long</span>
             <h3>Orders</h3>
         </a>
-
         <a href="#">
             <span class="material-icons-sharp">insights</span>
             <h3>Analytics</h3>
@@ -60,6 +60,6 @@
             <span class="material-icons-sharp">logout</span>
             <h3>Logout</h3>
         </a>
-
     </div>
 </aside>
+

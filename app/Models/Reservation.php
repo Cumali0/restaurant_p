@@ -4,20 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use mysql_xdevapi\ExecutionStatus;
 
 class Reservation extends Model
 {
     use HasFactory;
 
-    // Veritabanında hangi alanlara toplu veri eklenebilir
+    // Veritabanında hangi alanlara toplu veri eklenebilir (mass assignment)
     protected $fillable = [
-        'name',
-        'surname',
-        'datetime',
-        'people',
-        'message',
-        'status',
+        'name',      // müşteri adı
+        'surname',   // müşteri soyadı
+        'datetime',  // rezervasyon tarihi ve saati (datetime)
+        'people',    // kişi sayısı
+        'message',   // ekstra not veya mesaj
+        'status',    // rezervasyon durumu (pending, approved, rejected vb.)
     ];
-
 }
+

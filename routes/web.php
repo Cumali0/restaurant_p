@@ -1,25 +1,23 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
+use App\Models\Reservation;
 
 Route::get('/', function () {
     return view('index'); // resources/views/index.blade.php
 });
 
+// Dashboard (son 5 rezervasyonu gönderiyoruz)
 Route::get('/dashboard', function () {
-    return view('admin.index');
-});
+    $recentReservations = Reservation::latest()->take(5)->get();
+    return view('admin.index', compact('recentReservations'));
+})->name('dashboard');
 
+// Rezervasyon kaydetme
+Route::post('/dashboard/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
- Route::post('/rezervasyon', [ReservationController::class, 'store'])->name('rezervasyon.store');
-
-// Aşağıdaki admin prefix içindeki rezervasyon rotalarını komple kaldır:
-
-/*
-Route::prefix('admin')->group(function () {
-    Route::get('/reservations', [ReservationController::class, 'index'])->name('admin.reservations.index');
-    Route::post('/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('admin.reservations.approve');
-    Route::delete('/reservations/{id}', [ReservationController::class, 'destroy'])->name('admin.reservations.destroy');
-});
-*/
-
+// Rezervasyon yönetimi
+Route::get('/dashboard/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
+Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');

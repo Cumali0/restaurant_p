@@ -46,7 +46,7 @@
                 <h3>Customers</h3>
             </a>
 
-            <a href="#">
+            <a href="{{ route('reservations.index') }}">
                 <span class="material-icons-sharp">receipt_long</span>
                 <h3>Orders</h3>
             </a>
@@ -169,30 +169,32 @@
             <table>
                 <thead>
                 <tr>
-
-                    <th>Product Name</th>
-                    <th>Product Number</th>
-                    <th>Payment</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Date</th>
                     <th>Status</th>
-                    <th></th>
-
                 </tr>
                 </thead>
                 <tbody>
-                <!--<tr>
-                    <td>Foldable Mini Drone</td>
-                    <td>85631</td>
-                    <td>Due</td>
-                    <td class="warning">Pending</td>
-                    <td class="primary">Details</td>
-                </tr>
-                    -->
+                @forelse($recentReservations as $reservation)
+                    <tr>
+                        <td>{{ $reservation->name }}</td>
+                        <td>{{ $reservation->surname }}</td>
+                        <td>{{ $reservation->datetime }}</td>
+                        <td class="{{ $reservation->status == 'approved' ? 'success' : 'warning' }}">
+                            {{ ucfirst($reservation->status) }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4">No recent reservations found.</td>
+                    </tr>
+                @endforelse
                 </tbody>
-
             </table>
-            <a href="#">Show All</a>
-
+            <a href="{{ route('reservations.index') }}">Show All</a>
         </div>
+
     </main>
 
     <!-----------------END OF MAIN-------------->

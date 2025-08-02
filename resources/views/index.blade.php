@@ -388,7 +388,7 @@
 
                 </h5>
                 <h1 class="text-white mb-4">Online Masa Kaydı</h1>
-                <form action="{{ route('rezervasyon.store') }}" method="POST">
+                <form action="{{ route('reservations.store') }}" method="POST">
                     @csrf
                     <div class="row g-3">
                         <div class="col-md-6">
