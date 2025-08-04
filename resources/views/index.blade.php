@@ -426,6 +426,11 @@
                                 <label for="people">Kişi Sayısı</label>
                             </div>
                         </div>
+
+                        <div id="tables-container"></div>
+
+                        <input type="hidden" id="selected_table_id" />
+
                         <div class="col-12">
                             <div class="form-floating">
                                 <textarea class="form-control" id="message" name="message" placeholder="Özel İstek" style="height: 100px;"></textarea>
@@ -632,22 +637,26 @@
         time_24hr: true,
         locale: "tr",
 
-
+        // Haftanın tüm günlerini aktif ediyoruz
         enable: [
             function(date) {
-                // Haftanın tüm günleri seçilebilir
-                return (date.getDay() >= 0 && date.getDay() <= 6);
+                return date.getDay() >= 0 && date.getDay() <= 6;
             }
         ],
 
+        // Tarih seçildiğinde veya picker açıldığında saat aralıklarını ayarla
         onReady: function(selectedDates, dateStr, instance) {
             updateTimeLimits(instance);
         },
         onChange: function(selectedDates, dateStr, instance) {
             updateTimeLimits(instance);
-        }
 
+            if (dateStr) {
+                fetchAvailableTables(dateStr);
+            }
+        }
     });
+
     function updateTimeLimits(fpInstance) {
         const selectedDate = fpInstance.selectedDates[0];
         if (!selectedDate) {
@@ -668,6 +677,51 @@
             fpInstance.set('maxTime', "21:00");
         }
     }
+
+    const tablesContainer = document.getElementById('tables-container');
+    let selectedTableId = null;
+
+    function fetchAvailableTables(datetime) {
+        fetch(`/api/tables-availability?datetime=${encodeURIComponent(datetime)}`)
+            .then(res => res.json())
+            .then(data => {
+                tablesContainer.innerHTML = '';
+                selectedTableId = null;
+                document.getElementById('selected_table_id').value = '';
+
+                data.available.forEach(table => {
+                    const div = document.createElement('div');
+                    div.className = 'table available';
+                    div.textContent = 'Masa ' + table.number;
+                    div.onclick = () => selectTable(table.id, div);
+                    tablesContainer.appendChild(div);
+                });
+
+                data.booked.forEach(table => {
+                    const div = document.createElement('div');
+                    div.className = 'table booked';
+                    div.textContent = 'Masa ' + table.number;
+                    tablesContainer.appendChild(div);
+                });
+            })
+            .catch(() => {
+                tablesContainer.innerHTML = '<p style="color:red;">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
+            });
+    }
+
+    function selectTable(id, element) {
+        if (selectedTableId === id) {
+            selectedTableId = null;
+            element.classList.remove('selected');
+            document.getElementById('selected_table_id').value = '';
+        } else {
+            selectedTableId = id;
+            document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('selected_table_id').value = id;
+        }
+    }
+
 
 
 </script>

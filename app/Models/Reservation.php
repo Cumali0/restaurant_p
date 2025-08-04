@@ -11,6 +11,7 @@ class Reservation extends Model
 
     // Veritabanında hangi alanlara toplu veri eklenebilir (mass assignment)
     protected $fillable = [
+        'table_id',
         'name',      // müşteri adı
         'surname',   // müşteri soyadı
         'datetime',  // rezervasyon tarihi ve saati (datetime)
@@ -18,5 +19,12 @@ class Reservation extends Model
         'message',   // ekstra not veya mesaj
         'status',    // rezervasyon durumu (pending, approved, rejected vb.)
     ];
+
+    public function table()
+    {
+        return $this->belongsTo(Table::class);
+    }
+
+
 }
 

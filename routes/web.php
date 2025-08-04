@@ -21,3 +21,6 @@ Route::post('/dashboard/reservations', [ReservationController::class, 'store'])-
 Route::get('/dashboard/reservations', [ReservationController::class, 'index'])->name('reservations.index');
 Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
 Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+
+
+Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability']);
