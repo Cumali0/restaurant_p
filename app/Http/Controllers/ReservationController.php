@@ -76,4 +76,37 @@ class ReservationController extends Controller
 
         return redirect()->route('reservations.index')->with('success', 'Rezervasyon silindi.');
     }
+    public function tablesAvailability(Request $request)
+    {
+        $datetime = $request->query('datetime');
+
+        if (!$datetime) {
+            return response()->json(['error' => 'Datetime parameter required'], 400);
+        }
+
+        $tables = Table::orderBy('table_number')->get();
+
+        // Aynı datetime ve 'reserved' durumundaki rezervasyonları çek
+        $bookedTableIds = Reservation::where('datetime', $datetime)
+            ->where('status', 'reserved')
+            ->pluck('table_id')
+            ->toArray();
+
+        $available = [];
+        $booked = [];
+
+        foreach ($tables as $table) {
+            if (in_array($table->id, $bookedTableIds)) {
+                $booked[] = ['id' => $table->id, 'number' => $table->table_number];
+            } else {
+                $available[] = ['id' => $table->id, 'number' => $table->table_number];
+            }
+        }
+
+        return response()->json([
+            'available' => $available,
+            'booked' => $booked,
+        ]);
+    }
+
 }

@@ -1,4 +1,3 @@
-
 <aside>
     <div class="top">
         <div class="logo">
@@ -11,26 +10,27 @@
     </div>
 
     <div class="sidebar">
-        <a href="#">
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <span class="material-icons-sharp">grid_view</span>
             <h3>Dashboard</h3>
         </a>
 
-        <a href="#">
+        <a href="#" >
             <span class="material-icons-sharp">person_outline</span>
             <h3>Customers</h3>
         </a>
 
-        <a href="{{ route('reservations.index') }}">
+        <a href="{{ route('reservations.index') }}" class="{{ request()->routeIs('reservations.index') ? 'active' : '' }}">
             <span class="material-icons-sharp">receipt_long</span>
             <h3>Orders</h3>
         </a>
-        <a href="#">
+
+        <a href="#" >
             <span class="material-icons-sharp">insights</span>
             <h3>Analytics</h3>
         </a>
 
-        <a href="#">
+        <a href="#" >
             <span class="material-icons-sharp">mail_outline</span>
             <h3>Messages</h3>
             <span class="message-count">26</span>
@@ -63,3 +63,25 @@
     </div>
 </aside>
 
+<div class="right">
+    <div class="top register-r">
+        <button id="menu-btn">
+            <span class="material-icons-sharp">menu</span>
+        </button>
+        <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+        </div>
+        <div class="profile">
+            <div class="info">
+                <p>Hey, <b>{{ Auth::user()->name ?? 'User' }}</b></p>
+                <small class="text-muted">Admin</small>
+            </div>
+            <div class="profile-photo">
+                <img src="{{ asset('img/profile-photo.jpg') }}" alt="Profile Photo">
+            </div>
+        </div>
+    </div>
+
+    {{-- Buraya ana içerik gelecek --}}
+</div>

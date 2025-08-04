@@ -880,3 +880,21 @@ button[formmethod="delete"], button[type="submit"][formmethod="delete"] {
 button[formmethod="delete"]:hover, button[type="submit"][formmethod="delete"]:hover {
     background-color: #c82333;
 }
+
+
+
+
+/*.sidebar ul li.active a {
+    background-color: #4c68af;
+    color: white;
+    font-weight: bold;
+}
+*/
+
+.register-r {
+    position: fixed;     /* Sayfaya sabitlenir */
+    top: 20px;           /* Üstten 20px aşağıda */
+    right: 20px;         /* Sağdan 20px içeride */
+    z-index: 9999;       /* Üstte görünmesi için yüksek z-index */
+    /* İstersen genişlik, yükseklik, arka plan vs ekle */
+}

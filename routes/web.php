@@ -24,3 +24,13 @@ Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'de
 
 
 Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability']);
+
+
+use App\Http\Controllers\AdminController;
+
+Route::get('/dashboard/login', function () {
+    return view('admin.login.index'); // resources/views/dashboard/login/index.blade.php
+})->name('dashboard.login');
+
+
+Route::post('/dashboard/login', [AdminController::class, 'login'])->name('dashboard.login.post');

@@ -682,7 +682,7 @@
     let selectedTableId = null;
 
     function fetchAvailableTables(datetime) {
-        fetch(`/api/tables-availability?datetime=${encodeURIComponent(datetime)}`)
+        fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}`)
             .then(res => res.json())
             .then(data => {
                 tablesContainer.innerHTML = '';
