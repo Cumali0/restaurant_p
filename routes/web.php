@@ -9,10 +9,12 @@ Route::get('/', function () {
 });
 
 // Dashboard (son 5 rezervasyonu gönderiyoruz)
-Route::get('/dashboard', function () {
-    $recentReservations = Reservation::latest()->take(5)->get();
-    return view('admin.index', compact('recentReservations'));
-})->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        $recentReservations = Reservation::latest()->take(5)->get();
+        return view('admin.index', compact('recentReservations'));
+    })->name('dashboard');
+});
 
 // Rezervasyon kaydetme
 Route::post('/dashboard/reservations', [ReservationController::class, 'store'])->name('reservations.store');
@@ -34,3 +36,15 @@ Route::get('/dashboard/login', function () {
 
 
 Route::post('/dashboard/login', [AdminController::class, 'login'])->name('dashboard.login.post');
+
+
+
+
+use Illuminate\Support\Facades\Auth;
+
+Route::post('/dashboard/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/dashboard/login'); // veya login sayfanın URL'si
+})->name('logout');

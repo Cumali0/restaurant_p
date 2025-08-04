@@ -19,8 +19,8 @@ class AdminController extends Controller
 
         // Giriş denemesi
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            // Başarılı giriş, dashboard sayfasına yönlendir
-            return redirect()->intended('/dashboard');
+            $request->session()->regenerate();  // BU ÇOK ÖNEMLİ
+            return redirect()->intended(route('dashboard'));
         }
 
         // Başarısız giriş, hata mesajı ile geri dön
