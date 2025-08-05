@@ -429,7 +429,7 @@
 
                         <div id="tables-container"></div>
 
-                        <input type="hidden" id="selected_table_id" />
+                        <input type="hidden" id="selected_table_id" name="table_id" />
 
                         <div class="col-12">
                             <div class="form-floating">
@@ -692,7 +692,7 @@
                 data.available.forEach(table => {
                     const div = document.createElement('div');
                     div.className = 'table available';
-                    div.textContent = 'Masa ' + table.number;
+                    div.textContent = 'Masa ' + table.name;  // Burada table.number değil, table.name olmalı
                     div.onclick = () => selectTable(table.id, div);
                     tablesContainer.appendChild(div);
                 });
@@ -700,7 +700,7 @@
                 data.booked.forEach(table => {
                     const div = document.createElement('div');
                     div.className = 'table booked';
-                    div.textContent = 'Masa ' + table.number;
+                    div.textContent = 'Masa ' + table.name;  // Burada da aynı şekilde
                     tablesContainer.appendChild(div);
                 });
             })

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Table;
+use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
@@ -18,8 +19,8 @@ class ReservationController extends Controller
     // Yeni rezervasyon formu (GET /dashboard/reservations/create)
     public function create()
     {
-        // Masa listesini de gönderebiliriz form için, isteğe bağlı
-        $tables = Table::orderBy('table_number')->get();
+        // Masaları sırala, 'name' alanına göre alalım
+        $tables = Table::orderBy('name')->get();
         return view('admin.reservations.create', compact('tables'));
     }
 
@@ -27,18 +28,34 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'table_id' => 'required|exists:tables,id',        // Masanın seçilmiş olması önemli
+            'table_id' => 'required|exists:tables,id',
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
-            'datetime' => 'required|date',
+            'datetime' => 'required|date_format:Y-m-d H:i',
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
         ]);
 
-        // Aynı masa ve tarih/saat için çakışma kontrolü (basit)
+        $datetime = Carbon::createFromFormat('Y-m-d H:i', $request->datetime);
+
+        // Çalışma saatleri kontrolü
+        $day = $datetime->dayOfWeek;
+        $time = $datetime->format('H:i');
+
+        if ($day === 0) { // Pazar
+            if ($time < '10:00' || $time > '20:00') {
+                return back()->withErrors(['datetime' => 'Pazar günleri rezervasyonlar 10:00 - 20:00 saatleri arasında yapılabilir.'])->withInput();
+            }
+        } else { // Pazartesi - Cumartesi
+            if ($time < '09:00' || $time > '21:00') {
+                return back()->withErrors(['datetime' => 'Rezervasyonlar 09:00 - 21:00 saatleri arasında yapılabilir.'])->withInput();
+            }
+        }
+
+        // Aynı masa ve tarih/saat için çakışma kontrolü
         $exists = Reservation::where('table_id', $request->table_id)
             ->where('datetime', $request->datetime)
-            ->where('status', 'reserved') // sadece aktif rezervasyonlara bak
+            ->where('status', 'reserved')
             ->exists();
 
         if ($exists) {
@@ -76,6 +93,8 @@ class ReservationController extends Controller
 
         return redirect()->route('reservations.index')->with('success', 'Rezervasyon silindi.');
     }
+
+    // AJAX: Seçilen datetime için masa uygunluk durumu (boş/dolu)
     public function tablesAvailability(Request $request)
     {
         $datetime = $request->query('datetime');
@@ -84,7 +103,7 @@ class ReservationController extends Controller
             return response()->json(['error' => 'Datetime parameter required'], 400);
         }
 
-        $tables = Table::orderBy('table_number')->get();
+        $tables = Table::orderBy('name')->get();
 
         // Aynı datetime ve 'reserved' durumundaki rezervasyonları çek
         $bookedTableIds = Reservation::where('datetime', $datetime)
@@ -97,9 +116,9 @@ class ReservationController extends Controller
 
         foreach ($tables as $table) {
             if (in_array($table->id, $bookedTableIds)) {
-                $booked[] = ['id' => $table->id, 'number' => $table->table_number];
+                $booked[] = ['id' => $table->id, 'name' => $table->name];
             } else {
-                $available[] = ['id' => $table->id, 'number' => $table->table_number];
+                $available[] = ['id' => $table->id, 'name' => $table->name];
             }
         }
 
@@ -108,5 +127,4 @@ class ReservationController extends Controller
             'booked' => $booked,
         ]);
     }
-
 }

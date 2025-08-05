@@ -11,6 +11,9 @@
 
     <!-- Admin CSS -->
     <link rel="stylesheet" href="{{ asset('admin/css/style.css') }}" />
+
+    {{-- Buraya stack ile ekstra css dosyaları eklenebilir --}}
+    @stack('styles')
 </head>
 <body>
 
@@ -27,8 +30,10 @@
 </div> <!-- container sonu -->
 
 <!-- JS Dosyaları -->
-
 <script src="{{ asset('admin/js/index.js') }}"></script>
+
+{{-- Buraya stack ile ekstra js dosyaları eklenebilir --}}
+@stack('scripts')
 
 </body>
 </html>

@@ -25,7 +25,10 @@ Route::post('/dashboard/reservations/{id}/approve', [ReservationController::clas
 Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
 
 
-Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability']);
+
+
+Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability'])->name('tables.availability');
+
 
 
 use App\Http\Controllers\AdminController;
@@ -37,3 +40,7 @@ Route::get('/dashboard/logout', [AdminController::class, 'showLoginForm'])->name
 Route::post('/dashboard/login', [AdminController::class, 'login'])->name('dashboard.login.post');
 Route::post('/dashboard/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
+
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::resource('tables', App\Http\Controllers\Admin\TableController::class)->except(['create', 'edit', 'show']);
+});

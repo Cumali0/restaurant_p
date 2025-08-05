@@ -15,7 +15,7 @@
             <h3>Dashboard</h3>
         </a>
 
-        <a href="#" >
+        <a href="{{ route('tables.index') }}" class="{{ request()->routeIs('tables.*') ? 'active' : '' }}">
             <span class="material-icons-sharp">person_outline</span>
             <h3>Customers</h3>
         </a>

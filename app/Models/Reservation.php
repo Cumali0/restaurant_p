@@ -4,20 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Table;
 
 class Reservation extends Model
 {
     use HasFactory;
 
-    // Veritabanında hangi alanlara toplu veri eklenebilir (mass assignment)
     protected $fillable = [
         'table_id',
-        'name',      // müşteri adı
-        'surname',   // müşteri soyadı
-        'datetime',  // rezervasyon tarihi ve saati (datetime)
-        'people',    // kişi sayısı
-        'message',   // ekstra not veya mesaj
-        'status',    // rezervasyon durumu (pending, approved, rejected vb.)
+        'name',
+        'surname',
+        'datetime',
+        'people',
+        'message',
+        'status',
     ];
 
     public function table()
@@ -25,6 +25,8 @@ class Reservation extends Model
         return $this->belongsTo(Table::class);
     }
 
-
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_RESERVED = 'reserved';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
 }
-
