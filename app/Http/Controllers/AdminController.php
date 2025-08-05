@@ -26,4 +26,18 @@ class AdminController extends Controller
         // Başarısız giriş, hata mesajı ile geri dön
         return back()->withErrors(['email' => 'Email veya şifre hatalı!'])->withInput();
     }
+
+    public function logout(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('dashboard.login');
+    }
+    public function showLoginForm()
+    {
+        return view('admin.login.index'); // Login sayfanın blade dosyası
+    }
+
 }

@@ -56,10 +56,15 @@
             <h3>Add Product</h3>
         </a>
 
-        <a href="#">
-            <span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3>
-        </a>
+        <form action="{{ route('admin.logout') }}" method="POST" style="display:inline;">
+            @csrf
+            <a href="#" onclick="event.preventDefault(); this.closest('form').submit();"
+               class="{{ request()->routeIs('logout') ? 'active' : '' }}">
+                <span class="material-icons-sharp">logout</span>
+                <h3>Logout</h3>
+            </a>
+        </form>
+
     </div>
 </aside>
 

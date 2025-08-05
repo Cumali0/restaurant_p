@@ -82,10 +82,12 @@
                 <h3>Add Product</h3>
             </a>
 
-            <a href="#">
+            <a href="#" id="logout-link">
                 <span class="material-icons-sharp">logout</span>
                 <h3>Logout</h3>
             </a>
+
+
 
         </div>
     </aside>
@@ -242,7 +244,7 @@
                     </div>
                     <div class="message">
                         <p> <b>John Snow</b> Telling the Truth Is Doing the Right Thing, Even Though It Is Not Always Easy.  </p>
-                        <small class="text-muted">49 Minutrs Ago</small>
+                        <small class="text-muted">49 Minute Ago</small>
                     </div>
 
                 </div>
@@ -316,6 +318,11 @@
         </div>
     </div>
 </div>
+
+
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
 
 
 <script src="{{ asset('admin/js/order.js') }}"></script>

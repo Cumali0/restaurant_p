@@ -19,6 +19,17 @@ themeToggle.addEventListener('click', () => {
     themeToggle.querySelector('span:nth-child(2)').classList.toggle('active');
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+    const logoutLink = document.getElementById('logout-link');
+    logoutLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('logout-form').submit();
+    });
+});
+
+
+
 /*
 Orders.forEach(reservation => {
 
