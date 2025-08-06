@@ -16,6 +16,20 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 });
 
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard/reservations', [ReservationController::class, 'index'])
+        ->name('reservations.index');
+    Route::post('/dashboard/reservations', [ReservationController::class, 'store'])
+        ->name('reservations.store');
+    Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])
+        ->name('reservations.destroy');
+    Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])
+        ->name('reservations.approve');
+});
+
+
+/*
 // Rezervasyon kaydetme
 Route::post('/dashboard/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
@@ -25,7 +39,7 @@ Route::post('/dashboard/reservations/{id}/approve', [ReservationController::clas
 Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
 
 
-
+*/
 
 Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability'])->name('tables.availability');
 
@@ -44,3 +58,13 @@ Route::post('/dashboard/logout', [AdminController::class, 'logout'])->name('admi
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('tables', App\Http\Controllers\Admin\TableController::class)->except(['create', 'edit', 'show']);
 });
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard/analytics', [ReservationController::class, 'analytics'])->name('analytics.index');
+});
+
+
+Route::get('/rezervasyon-tesekkurler', function () {
+    return view('thankyou');
+})->name('reservation.thankyou');

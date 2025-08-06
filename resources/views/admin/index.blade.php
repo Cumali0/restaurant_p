@@ -41,7 +41,7 @@
                 <h3>Dashboard</h3>
             </a>
 
-            <a href="#">
+            <a href="{{ route('tables.index') }}">
                 <span class="material-icons-sharp">person_outline</span>
                 <h3>Customers</h3>
             </a>
@@ -51,7 +51,7 @@
                 <h3>Orders</h3>
             </a>
 
-            <a href="#">
+            <a href="{{ route('analytics.index') }}">
                 <span class="material-icons-sharp">insights</span>
                 <h3>Analytics</h3>
             </a>

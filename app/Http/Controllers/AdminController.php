@@ -37,7 +37,7 @@ class AdminController extends Controller
     }
     public function showLoginForm()
     {
-        return view('admin.login.index'); // Login sayfanın blade dosyası
+     return view('admin.login.index'); // Login sayfanın blade dosyası
     }
 
 }

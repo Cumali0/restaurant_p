@@ -370,73 +370,73 @@
 
 <!--Reservation Section Start-->
 
-<div  id="reservation" class="container py-5 px-0 wow fadeInUp">
+<div id="reservation" class="container py-5 px-0 wow fadeInUp">
     <div class="row g-0">
         <div class="col-md-6">
             <div class="video">
                 <button type="button" class="btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videomodal">
                     <span></span>
-
                 </button>
-
             </div>
         </div>
         <div class="col-md-6 bg-dark align-items-center">
             <div class="p-5">
                 <h5 class="section-title ff-secondary text-start text-primary fw-normal">
-                    Rezarvasyon
-
+                    Rezervasyon
                 </h5>
                 <h1 class="text-white mb-4">Online Masa Kaydı</h1>
                 <form action="{{ route('reservations.store') }}" method="POST">
                     @csrf
                     <div class="row g-3">
+                        <!-- Ad -->
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Ad" required>
                                 <label for="name">Ad</label>
                             </div>
                         </div>
+                        <!-- Soyad -->
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="surname" name="surname" placeholder="Soyad" required>
                                 <label for="surname">Soyad</label>
                             </div>
                         </div>
+                        <!-- Tarih & Saat -->
                         <div class="col-md-6">
                             <div class="form-floating date" id="date3">
-                                <input type="text" class="form-control" id="datetimepicker" name="datetime" placeholder="Date & Time" required>
+                                <input type="text" class="form-control" id="datetimepicker" name="datetime" placeholder="Date & Time" required autocomplete="off">
                                 <label for="datetimepicker">Tarih & Saat</label>
                             </div>
                         </div>
+                        <!-- Kişi Sayısı -->
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <select class="form-select" id="people" name="people" required>
-                                    <option value="1">1 Kişi</option>
-                                    <option value="2">2 Kişi</option>
-                                    <option value="3">3 Kişi</option>
-                                    <option value="4">4 Kişi</option>
-                                    <option value="4">5 Kişi</option>
-                                    <option value="4">6 Kişi</option>
-                                    <option value="4">7 Kişi</option>
-                                    <option value="4">8 Kişi</option>
-                                    <option value="4">9 Kişi</option>
-                                    <option value="4">10 Kişi</option>
+                                    @for ($i = 1; $i <= 10; $i++)
+                                        <option value="{{ $i }}">{{ $i }} Kişi</option>
+                                    @endfor
                                 </select>
                                 <label for="people">Kişi Sayısı</label>
                             </div>
                         </div>
 
-                        <div id="tables-container"></div>
+                        <!-- Masalar Dinamik Listesi -->
+                        <div class="col-12" id="tables-container" style="margin-top: 15px;">
+                            <p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>
+                        </div>
 
+                        <!-- Seçilen masa id'si gizli input -->
                         <input type="hidden" id="selected_table_id" name="table_id" />
 
+                        <!-- Özel İstek -->
                         <div class="col-12">
                             <div class="form-floating">
                                 <textarea class="form-control" id="message" name="message" placeholder="Özel İstek" style="height: 100px;"></textarea>
                                 <label for="message">Özel İstek</label>
                             </div>
                         </div>
+                        <!-- Gönder -->
                         <div class="col-12">
                             <button class="btn btn-primary w-100 py-3" type="submit">Şimdi Rezervasyon Yap</button>
                         </div>
@@ -446,28 +446,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="modal fade" id="VideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-0">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-                </div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9">
-                        <iframe src="" class="embed-responsive-item" id="video" allowfullscreen="always" allow="autoplay"></iframe>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
 </div>
 
 <!--Reservation Section End-->
@@ -631,100 +609,122 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
 
 <script>
-    flatpickr("#datetimepicker", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-        time_24hr: true,
-        locale: "tr",
 
-        // Haftanın tüm günlerini aktif ediyoruz
-        enable: [
-            function(date) {
-                return date.getDay() >= 0 && date.getDay() <= 6;
+        document.addEventListener('DOMContentLoaded', function() {
+
+        flatpickr("#datetimepicker", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            locale: "tr",
+            enable: [
+                function(date) {
+                    return date.getDay() >= 0 && date.getDay() <= 6;
+                }
+            ],
+            onReady: function(selectedDates, dateStr, instance) {
+                updateTimeLimits(instance);
+            },
+            onClose: function(selectedDates, dateStr, instance) {  // ✅ kullanıcı seçim işini bitirdiğinde
+                updateTimeLimits(instance);
+                if (dateStr) {
+                    fetchAvailableTables(dateStr);
+                } else {
+                    clearTables();
+                }
             }
-        ],
+        });
 
-        // Tarih seçildiğinde veya picker açıldığında saat aralıklarını ayarla
-        onReady: function(selectedDates, dateStr, instance) {
-            updateTimeLimits(instance);
-        },
-        onChange: function(selectedDates, dateStr, instance) {
-            updateTimeLimits(instance);
-
-            if (dateStr) {
-                fetchAvailableTables(dateStr);
-            }
-        }
-    });
-
-    function updateTimeLimits(fpInstance) {
+        function updateTimeLimits(fpInstance) {
         const selectedDate = fpInstance.selectedDates[0];
         if (!selectedDate) {
-            // Tarih seçilmemişse default zaman aralığı
-            fpInstance.set('minTime', "09:00");
-            fpInstance.set('maxTime', "21:00");
-            return;
-        }
+        fpInstance.set('minTime', "09:00");
+        fpInstance.set('maxTime', "21:00");
+        return;
+    }
         const day = selectedDate.getDay();
 
-        if(day === 0) {
-            // Pazar: 10:00 - 20:00
-            fpInstance.set('minTime', "10:00");
-            fpInstance.set('maxTime', "20:00");
-        } else {
-            // Pazartesi - Cumartesi: 09:00 - 21:00
-            fpInstance.set('minTime', "09:00");
-            fpInstance.set('maxTime', "21:00");
-        }
+        if (day === 0) { // Pazar
+        fpInstance.set('minTime', "10:00");
+        fpInstance.set('maxTime', "20:00");
+    } else { // Pazartesi-Cumartesi
+        fpInstance.set('minTime', "09:00");
+        fpInstance.set('maxTime', "21:00");
+    }
     }
 
-    const tablesContainer = document.getElementById('tables-container');
-    let selectedTableId = null;
+        const tablesContainer = document.getElementById('tables-container');
+        let selectedTableId = null;
 
-    function fetchAvailableTables(datetime) {
-        fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}`)
-            .then(res => res.json())
-            .then(data => {
-                tablesContainer.innerHTML = '';
-                selectedTableId = null;
-                document.getElementById('selected_table_id').value = '';
+            function fetchAvailableTables(datetime) {
+                const duration = 90; // dakika
 
-                data.available.forEach(table => {
-                    const div = document.createElement('div');
-                    div.className = 'table available';
-                    div.textContent = 'Masa ' + table.name;  // Burada table.number değil, table.name olmalı
-                    div.onclick = () => selectTable(table.id, div);
-                    tablesContainer.appendChild(div);
-                });
+                fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        tablesContainer.innerHTML = '';
+                        selectedTableId = null;
+                        document.getElementById('selected_table_id').value = '';
 
-                data.booked.forEach(table => {
-                    const div = document.createElement('div');
-                    div.className = 'table booked';
-                    div.textContent = 'Masa ' + table.name;  // Burada da aynı şekilde
-                    tablesContainer.appendChild(div);
-                });
-            })
-            .catch(() => {
-                tablesContainer.innerHTML = '<p style="color:red;">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
-            });
+                        if (data.error) {
+                            tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                            return;
+                        }
+
+                        if (data.available.length === 0 && data.booked.length === 0) {
+                            tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
+                            return;
+                        }
+
+                        // Boş masalar
+                        data.available.forEach(table => {
+                            const div = document.createElement('div');
+                            div.className = 'table available';
+                            div.textContent = 'Masa ' + table.name;
+                            div.style.cursor = 'pointer';
+                            div.onclick = () => selectTable(table.id, div);
+                            tablesContainer.appendChild(div);
+                        });
+
+                        // Dolu masalar (kırmızı ve seçilemez)
+                        data.booked.forEach(table => {
+                            const div = document.createElement('div');
+                            div.className = 'table booked';
+                            div.textContent = 'Masa ' + table.name;
+                            div.style.opacity = '0.6';
+                            tablesContainer.appendChild(div);
+                        });
+                    })
+                    .catch(() => {
+                        tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
+                    });
+            }
+
+            function selectTable(id, element) {
+                if (element.classList.contains('booked')) return;  // dolu masa seçilemez
+
+                if (selectedTableId === id) {
+                    selectedTableId = null;
+                    element.classList.remove('selected');
+                    document.getElementById('selected_table_id').value = '';
+                } else {
+                    selectedTableId = id;
+                    document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
+                    element.classList.add('selected');
+                    document.getElementById('selected_table_id').value = id;
+                }
+            }
+
+
+            function clearTables() {
+        tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
+        selectedTableId = null;
+        document.getElementById('selected_table_id').value = '';
     }
 
-    function selectTable(id, element) {
-        if (selectedTableId === id) {
-            selectedTableId = null;
-            element.classList.remove('selected');
-            document.getElementById('selected_table_id').value = '';
-        } else {
-            selectedTableId = id;
-            document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            document.getElementById('selected_table_id').value = id;
-        }
-    }
-
-
-
+    });
 </script>
+
 
 
 <!-- Bootstrap JS -->

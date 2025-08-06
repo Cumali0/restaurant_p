@@ -470,3 +470,10 @@
 .table:hover {
     transform: scale(1.05);
 }
+
+
+.table.booked {
+    background-color: #d9534f; /* kırmızı ton */
+    color: white;
+    cursor: not-allowed;
+}

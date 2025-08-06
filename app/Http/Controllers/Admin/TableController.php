@@ -8,46 +8,44 @@ use Illuminate\Http\Request;
 
 class TableController extends Controller
 {
-public function index()
-{
-$tables = Table::orderBy('floor')->orderBy('name')->get();
-return view('admin.tables.index', compact('tables'));
-}
+    public function index()
+    {
+        $tables = Table::all();
+        return view('admin.tables.index', compact('tables'));
+    }
 
-public function store(Request $request)
-{
-$request->validate([
-'name' => 'required|string|max:255',
-'capacity' => 'required|integer|min:1',
-'status' => 'required|in:available,booked',
-'floor' => 'nullable|integer',
-]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'capacity' => 'required|integer',
+            'status' => 'required|in:available,booked',
+            'floor' => 'nullable|integer',
+        ]);
 
-$data = $request->only(['name', 'capacity', 'status', 'floor']);
-Table::create($data);
+        Table::create($request->all());
 
-return redirect()->route('admin.tables.index')->with('success', 'Masa başarıyla eklendi.');
-}
+        return redirect()->route('tables.index')->with('success', 'Masa başarıyla eklendi.');
+    }
 
-public function update(Request $request, Table $table)
-{
-$request->validate([
-'name' => 'required|string|max:255',
-'capacity' => 'required|integer|min:1',
-'status' => 'required|in:available,booked',
-'floor' => 'nullable|integer',
-]);
+    public function update(Request $request, Table $table)
+    {
+        $request->validate([
+            'name' => 'required',
+            'capacity' => 'required|integer',
+            'status' => 'required|in:available,booked',
+            'floor' => 'nullable|integer',
+        ]);
 
-$data = $request->only(['name', 'capacity', 'status', 'floor']);
-$table->update($data);
+        $table->update($request->all());
 
-return redirect()->route('admin.tables.index')->with('success', 'Masa başarıyla güncellendi.');
-}
+        return redirect()->route('tables.index')->with('success', 'Masa başarıyla güncellendi.');
+    }
 
-public function destroy(Table $table)
-{
-$table->delete();
+    public function destroy(Table $table)
+    {
+        $table->delete();
 
-return redirect()->route('admin.tables.index')->with('success', 'Masa başarıyla silindi.');
-}
+        return redirect()->route('tables.index')->with('success', 'Masa başarıyla silindi.');
+    }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->dateTime('datetime');
+            $table->dateTime('end_datetime')->nullable();  // Burayı ekledik
             $table->integer('people')->default(1);
             $table->text('message')->nullable();
             $table->enum('status', ['pending', 'reserved', 'approved', 'rejected'])->default('pending');

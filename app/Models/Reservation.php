@@ -15,6 +15,7 @@ class Reservation extends Model
         'name',
         'surname',
         'datetime',
+        'end_datetime',
         'people',
         'message',
         'status',

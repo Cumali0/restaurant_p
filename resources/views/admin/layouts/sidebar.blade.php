@@ -25,7 +25,7 @@
             <h3>Orders</h3>
         </a>
 
-        <a href="#" >
+        <a href="{{ route('analytics.index') }}" class="{{ request()->routeIs('analytics.index') ? 'active' : '' }}">
             <span class="material-icons-sharp">insights</span>
             <h3>Analytics</h3>
         </a>
