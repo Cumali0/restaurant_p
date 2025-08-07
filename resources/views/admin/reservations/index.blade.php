@@ -12,6 +12,7 @@
         <tr>
             <th>Name</th>
             <th>Surname</th>
+            <th>Email</th>  <!-- Buraya eklendi -->
             <th>Date</th>
             <th>Status</th>
             <th>Actions</th>
@@ -22,6 +23,7 @@
             <tr>
                 <td>{{ $reservation->name }}</td>
                 <td>{{ $reservation->surname }}</td>
+                <td>{{ $reservation->email }}</td>  <!-- Buraya eklendi -->
                 <td>{{ $reservation->datetime }}</td>
                 <td>{{ ucfirst($reservation->status) }}</td>
                 <td>
@@ -31,15 +33,24 @@
                             <button type="submit">Approve</button>
                         </form>
                     @endif
+
+                    @if ($reservation->status != 'rejected')
+                        <form action="{{ route('reservations.reject', $reservation->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            <button type="submit" onclick="return confirm('Bu rezervasyonu reddetmek istediğinize emin misiniz?')">Reject</button>
+                        </form>
+                    @endif
+
                     <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+                        <button type="submit" onclick="return confirm('Rezervasyonu silmek istediğinize emin misiniz?')">Delete</button>
                     </form>
                 </td>
             </tr>
         @empty
-            <tr><td colspan="5">No reservations found.</td></tr>
+            <tr><td colspan="6">No reservations found.</td></tr>
+
         @endforelse
         </tbody>
     </table>

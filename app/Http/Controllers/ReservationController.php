@@ -6,10 +6,32 @@ use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Table;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;  // << Bunu ekle
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationStatusMail;
 
 class ReservationController extends Controller
 {
+
+    public function reject($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $reservation->status = 'rejected';
+        $reservation->save();
+
+        // Müşteriye mail gönder
+        Mail::to($reservation->email)->send(new ReservationStatusMail($reservation));
+
+        return redirect()->route('reservations.index')->with('success', 'Rezervasyon reddedildi ve müşteriye mail gönderildi.');
+    }
+
+
+
+
+
+
+
+
     // Rezervasyonları listeleme
     public function index()
     {
@@ -31,6 +53,7 @@ class ReservationController extends Controller
             'table_id' => 'required|exists:tables,id',
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',   // Zorunlu ve geçerli email kontrolü
             'datetime' => 'required|date_format:Y-m-d H:i',
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
@@ -76,6 +99,7 @@ class ReservationController extends Controller
             'table_id' => $request->table_id,
             'name' => $request->name,
             'surname' => $request->surname,
+            'email' => $request->email,
             'datetime' => $start,
             'end_datetime' => $end,
             'people' => $request->people,
@@ -94,7 +118,10 @@ class ReservationController extends Controller
         $reservation->status = 'approved';
         $reservation->save();
 
-        return redirect()->route('reservations.index')->with('success', 'Rezervasyon onaylandı.');
+        Mail::to($reservation->email)->send(new ReservationStatusMail($reservation));
+
+
+        return redirect()->route('reservations.index')->with('success', 'Rezervasyon onaylandı ve müsteriye mail gönderildi.');
     }
 
     // Rezervasyonu silme
@@ -103,7 +130,9 @@ class ReservationController extends Controller
         $reservation = Reservation::findOrFail($id);
         $reservation->delete();
 
-        return redirect()->route('reservations.index')->with('success', 'Rezervasyon silindi.');
+        Mail::to($reservation->email)->send(new ReservationStatusMail($reservation));
+
+        return redirect()->route('reservations.index')->with('success', 'Rezervasyon silindi ve  müsteriye mail gönderildi.');
     }
 
     // AJAX: Tarih ve süreye göre masa uygunluk durumu (boş/dolu)

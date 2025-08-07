@@ -18,14 +18,11 @@ Route::middleware('auth')->group(function () {
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard/reservations', [ReservationController::class, 'index'])
-        ->name('reservations.index');
-    Route::post('/dashboard/reservations', [ReservationController::class, 'store'])
-        ->name('reservations.store');
-    Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])
-        ->name('reservations.destroy');
-    Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])
-        ->name('reservations.approve');
+    Route::get('/dashboard/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+    Route::post('/dashboard/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+    Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
+    Route::post('/dashboard/reservations/{id}/reject', [ReservationController::class, 'reject'])->name('reservations.reject');
 });
 
 
@@ -68,3 +65,14 @@ Route::middleware('auth')->group(function () {
 Route::get('/rezervasyon-tesekkurler', function () {
     return view('thankyou');
 })->name('reservation.thankyou');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::post('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('admin.profile.update');
+});
+
+
+
+Route::get('/admin/tables', [App\Http\Controllers\Admin\TableController::class, 'index'])->name('tables.index');
+

@@ -46,10 +46,11 @@
             <h3>Reports</h3>
         </a>
 
-        <a href="#">
+        <a class="nav-link" href="{{ route('admin.profile.edit') }}">
             <span class="material-icons-sharp">settings</span>
             <h3>Settings</h3>
         </a>
+
 
         <a href="#">
             <span class="material-icons-sharp">add</span>

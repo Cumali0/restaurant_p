@@ -72,7 +72,7 @@
                 <h3>Reports</h3>
             </a>
 
-            <a href="#">
+            <a href="{{ route('admin.profile.edit') }}">
                 <span class="material-icons-sharp">settings</span>
                 <h3>Settings</h3>
             </a>
@@ -173,8 +173,10 @@
                 <tr>
                     <th>Name</th>
                     <th>Surname</th>
+                    <th>Email</th>
                     <th>Date</th>
                     <th>Status</th>
+
                 </tr>
                 </thead>
                 <tbody>
@@ -182,6 +184,7 @@
                     <tr>
                         <td>{{ $reservation->name }}</td>
                         <td>{{ $reservation->surname }}</td>
+                        <td>{{ $reservation->email }}</td> <!-- Buraya email eklendi -->
                         <td>{{ $reservation->datetime }}</td>
                         <td class="{{ $reservation->status == 'approved' ? 'success' : 'warning' }}">
                             {{ ucfirst($reservation->status) }}
@@ -189,9 +192,10 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4">No recent reservations found.</td>
+                        <td colspan="5">No recent reservations found.</td> <!-- colspan'u 5 yaptık -->
                     </tr>
                 @endforelse
+
                 </tbody>
             </table>
             <a href="{{ route('reservations.index') }}">Show All</a>

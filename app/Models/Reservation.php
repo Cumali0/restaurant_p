@@ -14,6 +14,7 @@ class Reservation extends Model
         'table_id',
         'name',
         'surname',
+        'email',
         'datetime',
         'end_datetime',
         'people',
@@ -21,9 +22,13 @@ class Reservation extends Model
         'status',
     ];
 
-    public function table()
+    protected $casts = [
+        'datetime' => 'datetime',
+        'end_datetime' => 'datetime',
+    ];
+    public function tables()
     {
-        return $this->belongsTo(Table::class);
+        return $this->belongsToMany(Table::class, 'reservation_table');
     }
 
     public const STATUS_PENDING = 'pending';
@@ -31,3 +36,6 @@ class Reservation extends Model
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';
 }
+
+
+

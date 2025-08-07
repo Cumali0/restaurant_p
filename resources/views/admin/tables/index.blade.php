@@ -5,26 +5,30 @@
 @section('content')
     <div class="table-page">
         <h2>Masa Yönetimi</h2>
-        <div class="view-toggle">
-            <button id="tableViewBtn" class="btn btn-secondary active">📋 Tablo</button>
-            <button id="gridViewBtn" class="btn btn-secondary">🟢 Görsel</button>
-            <button class="btn btn-primary" onclick="openAddModal()">➕ Yeni Masa Ekle</button>
-        </div>
 
-        @if(session('success'))
-            <div class="alert success-alert">{{ session('success') }}</div>
-        @endif
+        {{-- Filtre Formu --}}
+        <form method="GET" action="{{ route('tables.index') }}" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+            <label for="date">Tarih:</label>
+            <input type="date" name="date" id="date" value="{{ request('date') }}" />
 
-        <div id="tableView">
+            <label for="start_time">Başlangıç Saati:</label>
+            <input type="time" name="start_time" id="start_time" value="{{ request('start_time') }}" />
 
+            <label for="end_time">Bitiş Saati:</label>
+            <input type="time" name="end_time" id="end_time" value="{{ request('end_time') }}" />
+
+            <button type="submit" class="btn btn-primary">Filtrele</button>
+        </form>
+
+        {{-- Masalar Tablosu --}}
         <table class="table">
             <thead>
             <tr>
                 <th>ID</th>
                 <th>Ad</th>
                 <th>Kapasite</th>
-                <th>Durum</th>
                 <th>Kat</th>
+                <th>Rezervasyonlar</th>
                 <th>İşlemler</th>
             </tr>
             </thead>
@@ -34,16 +38,30 @@
                     <td>{{ $table->id }}</td>
                     <td>{{ $table->name }}</td>
                     <td>{{ $table->capacity }}</td>
-                    <td>
-                        <span class="status-badge {{ $table->status }}">{{ ucfirst($table->status) }}</span>
-                    </td>
                     <td>{{ $table->floor }}</td>
                     <td>
+                        @if(isset($reservations[$table->id]) && $reservations[$table->id]->count() > 0)
+                            <ul style="padding-left: 15px; margin: 0;">
+                                @foreach($reservations[$table->id] as $reservation)
+                                    <li style="margin-bottom: 8px;">
+                                        <strong>{{ $reservation->name }} {{ $reservation->surname }}</strong><br>
+                                        {{ \Carbon\Carbon::parse($reservation->datetime)->format('H:i') }} -
+                                        {{ \Carbon\Carbon::parse($reservation->end_datetime)->format('H:i') }}<br>
+                                        Kişi: {{ $reservation->people }}<br>
+                                        Durum: {{ ucfirst($reservation->status) }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <span style="color:green; font-weight:bold;">BOŞ</span>
+                        @endif
+                    </td>
+                    <td>
                         <button class="btn btn-warning btn-sm"
-                                onclick="openEditModal({{ $table->id }}, '{{ $table->name }}', {{ $table->capacity }}, '{{ $table->status }}', {{ $table->floor ?? 'null' }})">
+                                onclick="openEditModal({{ $table->id }}, '{{ $table->name }}', {{ $table->capacity }}, {{ $table->floor ?? 'null' }})">
                             ✏ Düzenle
                         </button>
-                        <form action="{{ route('tables.destroy', $table->id) }}" method="POST" class="inline-form">
+                        <form action="{{ route('tables.destroy', $table->id) }}" method="POST" class="inline-form" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Masa silinsin mi?')">🗑 Sil</button>
@@ -53,13 +71,12 @@
             @endforeach
             </tbody>
         </table>
-    </div>
 
         <!-- Görsel görünüm -->
         <div id="gridView" style="display:none;">
             <div class="tables-grid">
                 @foreach($tables as $table)
-                    <div class="table-icon {{ $table->status }}"
+                    <div class="table-icon"
                          title="Kapasite: {{ $table->capacity }} - Kat: {{ $table->floor }}">
                         {{ $table->name }}
                     </div>
@@ -68,49 +85,41 @@
         </div>
     </div>
 
-    <!-- Modal Yapıları -->
-    <div class="modal" id="addModal" style="display:none;">
-        <div class="modal-content">
-            <h3>Yeni Masa Ekle</h3>
-            <form action="{{ route('tables.store') }}" method="POST" class="modal-form">
-                @csrf
-                <input type="text" name="name" placeholder="Masa Adı" required />
-                <input type="number" name="capacity" placeholder="Kapasite" required />
-                <select name="status">
-                    <option value="available">Uygun</option>
-                    <option value="booked">Rezerve</option>
-                </select>
-                <input type="number" name="floor" placeholder="Kat" />
-                <div class="modal-buttons">
-                    <button type="submit" class="btn btn-success">Kaydet</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">İptal</button>
-                </div>
-            </form>
+        <!-- Modal Yapıları -->
+        <div class="modal" id="addModal" style="display:none;">
+            <div class="modal-content">
+                <h3>Yeni Masa Ekle</h3>
+                <form action="{{ route('tables.store') }}" method="POST" class="modal-form">
+                    @csrf
+                    <input type="text" name="name" placeholder="Masa Adı" required />
+                    <input type="number" name="capacity" placeholder="Kapasite" required />
+                    <input type="number" name="floor" placeholder="Kat" />
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAddModal()">İptal</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <div class="modal" id="editModal" style="display:none;">
-        <div class="modal-content">
-            <h3>Masa Düzenle</h3>
-            <form id="editForm" method="POST" class="modal-form">
-                @csrf
-                @method('PUT')
-                <input type="text" id="editName" name="name" required />
-                <input type="number" id="editCapacity" name="capacity" required />
-                <select id="editStatus" name="status">
-                    <option value="available">Uygun</option>
-                    <option value="booked">Rezerve</option>
-                </select>
-                <input type="number" id="editFloor" name="floor" />
-                <div class="modal-buttons">
-                    <button type="submit" class="btn btn-primary">Güncelle</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">İptal</button>
-                </div>
-            </form>
+        <div class="modal" id="editModal" style="display:none;">
+            <div class="modal-content">
+                <h3>Masa Düzenle</h3>
+                <form id="editForm" method="POST" class="modal-form">
+                    @csrf
+                    @method('PUT')
+                    <input type="text" id="editName" name="name" required />
+                    <input type="number" id="editCapacity" name="capacity" required />
+                    <input type="number" id="editFloor" name="floor" />
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">İptal</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <style>
+        <style>
         /* Genel sayfa stili */
         .table-page {
             padding: 20px;
