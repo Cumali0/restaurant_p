@@ -61,6 +61,7 @@
                                 onclick="openEditModal({{ $table->id }}, '{{ $table->name }}', {{ $table->capacity }}, {{ $table->floor ?? 'null' }})">
                             ✏ Düzenle
                         </button>
+
                         <form action="{{ route('tables.destroy', $table->id) }}" method="POST" class="inline-form" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -377,14 +378,14 @@
             document.getElementById('addModal').style.display = 'none';
         }
 
-        function openEditModal(id, name, capacity, status, floor) {
+        function openEditModal(id, name, capacity, floor) {
             document.getElementById('editModal').style.display = 'flex';
             document.getElementById('editName').value = name;
             document.getElementById('editCapacity').value = capacity;
-            document.getElementById('editStatus').value = status;
             document.getElementById('editFloor').value = floor;
-            document.getElementById('editForm').action = '/admin/tables/' + id;
+            document.getElementById('editForm').action = '/admin/tables/' + id;  // Burada id boş olmasın!
         }
+
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }

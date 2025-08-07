@@ -14,7 +14,7 @@
             </div>
 
             <!-- Başlık -->
-            <h1 class="text-3xl font-bold text-gray-800">Rezervasyonunuz Onaylandı ✅</h1>
+            <h1 class="text-3xl font-bold text-gray-800">Rezervasyonunuz Başarıyla Gönderildi.✅</h1>
             <p class="mt-4 text-gray-600 leading-relaxed">
                 Teşekkür ederiz! Rezervasyon talebiniz başarıyla alındı.
                 Rezervasyon detaylarınız kısa süre içinde
