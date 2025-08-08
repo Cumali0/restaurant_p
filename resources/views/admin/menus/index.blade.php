@@ -456,6 +456,88 @@
                 box-sizing: border-box;
             }
 
+
+
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 20px;
+            }
+
+            .menu-container {
+                max-width: 1300px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+
+            .menu-card {
+                background-color: #fff;
+                border-radius: 16px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .menu-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            }
+
+            .menu-card img {
+                width: 100%;
+                height: 160px;
+                object-fit: cover;
+                border-bottom: 1px solid #eee;
+            }
+
+            .menu-content {
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            .menu-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin: 0 0 8px;
+                color: #333;
+            }
+
+            .menu-description {
+                font-size: 14px;
+                color: #777;
+                margin-bottom: 12px;
+                flex-grow: 1;
+            }
+
+            .menu-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .menu-price {
+                font-size: 16px;
+                font-weight: bold;
+                color: #27ae60;
+            }
+
+            .menu-category {
+                font-size: 13px;
+                color: #999;
+                background-color: #f1f1f1;
+                padding: 2px 8px;
+                border-radius: 12px;
+            }
+
+
         </style>
     @endpush
 

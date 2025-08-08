@@ -14,4 +14,9 @@ protected $fillable = [
 'image',
 'active',
 ];
+
+
+
+
 }
+

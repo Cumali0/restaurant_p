@@ -1,5 +1,5 @@
 <?php
-
+use App\Models\Menu; // bu satırı controller'ın en üstüne ekle
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\ReservationController;
@@ -83,3 +83,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::put('menus/{menu}', [AdminMenuController::class, 'update'])->name('admin.menus.update');
     Route::delete('menus/{menu}', [AdminMenuController::class, 'destroy'])->name('admin.menus.destroy');
 });
+
+
+
