@@ -3,7 +3,7 @@
 @section('title', 'Profilim')
 
 @section('content')
-    <div class="container" style="max-width: 600px;">
+    <div class="profile-container">
         <h2>👤 Profil Güncelle</h2>
 
         @if(session('success'))
@@ -52,103 +52,140 @@
 
             <button type="submit" class="btn btn-primary">Güncelle</button>
         </form>
-
     </div>
 
-
-
     <style>
-
-        /* Container */
-        .container {
-            background: #fff;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            margin-top: 40px;
+        .profile-container {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 600px;
+            width: 90%;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+            padding: 45px 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 0.03em;
+            transition: box-shadow 0.3s ease;
         }
 
-        /* Başlık */
-        h2 {
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 30px;
-            font-size: 1.8rem;
+        .profile-container:hover {
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
         }
 
-        /* Form label */
-        label {
+        .profile-container h2 {
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+            text-align: center;
+            position: relative;
+            letter-spacing: 0.05em;
+        }
+
+        .profile-container h2::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #2563eb;
+            border-radius: 3px;
+            margin: 10px auto 0;
+            box-shadow: 0 0 10px #2563ebaa;
+        }
+
+        .profile-container label {
             font-weight: 600;
-            color: #555;
-        }
-
-        /* Form kontrol (inputlar) */
-        .form-control {
-            border-radius: 8px;
-            border: 1.7px solid #ced4da;
-            padding: 10px 14px;
+            color: #444;
+            display: block;
+            margin-bottom: 8px;
             font-size: 1rem;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
+        .profile-container .form-control {
+            width: 100%;
+            border-radius: 15px;
+            border: 1.8px solid #cbd5e1;
+            padding: 14px 20px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             outline: none;
+            box-sizing: border-box;
+            color: #222;
+            background-color: #f9fbff;
         }
 
-        /* Başarılı mesaj */
-        .alert-success {
-            border-left: 5px solid #198754;
-            background-color: #d1e7dd;
-            color: #0f5132;
-            padding: 15px 20px;
-            border-radius: 8px;
+        .profile-container .form-control::placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .profile-container .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
+            background-color: #ffffff;
+        }
+
+        .profile-container .alert-success {
+            border-left: 6px solid #22c55e;
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 16px 22px;
+            border-radius: 12px;
             font-weight: 600;
-            margin-bottom: 25px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(34, 197, 94, 0.25);
         }
 
-        /* Hata mesajları */
-        .alert-danger {
-            border-left: 5px solid #dc3545;
-            background-color: #f8d7da;
-            color: #842029;
-            padding: 15px 20px;
-            border-radius: 8px;
+        .profile-container .alert-danger {
+            border-left: 6px solid #ef4444;
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 16px 22px;
+            border-radius: 12px;
             font-weight: 600;
-            margin-bottom: 25px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(239, 68, 68, 0.25);
         }
 
-        .alert-danger ul {
+        .profile-container .alert-danger ul {
             margin: 0;
             padding-left: 20px;
         }
 
-        /* Buton */
-        .btn-primary {
-            background-color: #0d6efd;
+        .profile-container .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
             border: none;
-            padding: 12px 28px;
-            font-size: 1.1rem;
-            border-radius: 10px;
-            font-weight: 700;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 5px 15px rgba(13,110,253,0.4);
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.25s ease;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
             cursor: pointer;
             user-select: none;
+            display: block;
+            width: 100%;
+            margin-top: 24px;
         }
 
-        .btn-primary:hover,
-        .btn-primary:focus {
-            background-color: #0b5ed7;
-            box-shadow: 0 6px 20px rgba(11,94,215,0.6);
+        .profile-container .btn-primary:hover,
+        .profile-container .btn-primary:focus {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            box-shadow: 0 14px 35px rgba(30, 64, 175, 0.7);
             outline: none;
+            transform: scale(1.05);
         }
 
-        /* Form grup aralığı */
-        .mb-3 {
-            margin-bottom: 1.5rem;
+        .profile-container .mb-3 {
+            margin-bottom: 2rem;
         }
+
 
     </style>
+
 @endsection

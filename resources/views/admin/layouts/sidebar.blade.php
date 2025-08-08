@@ -36,7 +36,7 @@
             <span class="message-count">26</span>
         </a>
 
-        <a href="#">
+        <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.index') ? 'active' : '' }}">
             <span class="material-icons-sharp">inventory</span>
             <h3>Products</h3>
         </a>

@@ -3,22 +3,32 @@
 @section('title', 'Masa Yönetimi')
 
 @section('content')
+    <div class="container-fluid px-4">
+    <div class="card w-100">
+        <div class="card-body">
     <div class="table-page">
-        <h2>Masa Yönetimi</h2>
+        <h2 style="text-align:center; font-size: 28px; margin-bottom: 30px;">🍽️ Masa Yönetimi</h2>
+
+<div style="margin-bottom: 20px;">
+    <button class="btn btn-success" onclick="openAddModal()">➕ Yeni Masa Ekle</button>
+</div>
+
+
 
         {{-- Filtre Formu --}}
-        <form method="GET" action="{{ route('tables.index') }}" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-            <label for="date">Tarih:</label>
-            <input type="date" name="date" id="date" value="{{ request('date') }}" />
+       <form method="GET" action="{{ route('tables.index') }}" style="margin-bottom:20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <label for="date">📅 Tarih:</label>
+    <input type="date" name="date" id="date" value="{{ request('date') }}" />
 
-            <label for="start_time">Başlangıç Saati:</label>
-            <input type="time" name="start_time" id="start_time" value="{{ request('start_time') }}" />
+    <label for="start_time">⏱ Başlangıç:</label>
+    <input type="time" name="start_time" id="start_time" value="{{ request('start_time') }}" />
 
-            <label for="end_time">Bitiş Saati:</label>
-            <input type="time" name="end_time" id="end_time" value="{{ request('end_time') }}" />
+    <label for="end_time">⏳ Bitiş:</label>
+    <input type="time" name="end_time" id="end_time" value="{{ request('end_time') }}" />
 
-            <button type="submit" class="btn btn-primary">Filtrele</button>
-        </form>
+    <button type="submit" class="btn btn-primary">🔍 Filtrele</button>
+</form>
+
 
         {{-- Masalar Tablosu --}}
         <table class="table">
@@ -119,7 +129,9 @@
                 </form>
             </div>
         </div>
-
+        </div>
+    </div>
+    </div>
         <style>
         /* Genel sayfa stili */
         .table-page {
@@ -344,7 +356,37 @@
         .table-icon:hover {
             transform: scale(1.1);
         }
-    </style>
+
+        .table-page {
+            margin: 0 auto;
+        }
+
+        .table {
+            width: 100%;
+            min-width: 100%;
+        }
+
+        .card {
+            width: 415%;
+            max-width: 415%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 55px;
+        }
+
+        .table-page {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        form {
+            justify-content: center;
+        }
+
+        </style>
 
     <script>
 

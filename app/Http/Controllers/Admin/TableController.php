@@ -67,7 +67,7 @@ class TableController extends Controller
         $request->validate([
             'name' => 'required',
             'capacity' => 'required|integer',
-            'status' => 'required|in:available,booked',
+           // 'status' => 'required|in:available,booked',
             'floor' => 'nullable|integer',
         ]);
 
@@ -81,7 +81,7 @@ class TableController extends Controller
         $request->validate([
             'name' => 'required',
             'capacity' => 'required|integer',
-            'status' => 'required|in:available,booked',
+           // 'status' => 'required|in:available,booked',
             'floor' => 'nullable|integer',
         ]);
 

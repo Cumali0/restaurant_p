@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\ReservationController;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('index'); // resources/views/index.blade.php
@@ -41,9 +43,6 @@ Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'de
 Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability'])->name('tables.availability');
 
 
-
-use App\Http\Controllers\AdminController;
-
 Route::get('/dashboard/login', [AdminController::class, 'showLoginForm'])->name('dashboard.login');
 Route::get('/dashboard/logout', [AdminController::class, 'showLoginForm'])->name('login'); // Bu satır kesin olmalı
 
@@ -76,3 +75,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/admin/tables', [App\Http\Controllers\Admin\TableController::class, 'index'])->name('tables.index');
 
+
+
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('menus', [AdminMenuController::class, 'index'])->name('admin.menus.index');
+    Route::post('menus', [AdminMenuController::class, 'store'])->name('admin.menus.store');
+    Route::put('menus/{menu}', [AdminMenuController::class, 'update'])->name('admin.menus.update');
+    Route::delete('menus/{menu}', [AdminMenuController::class, 'destroy'])->name('admin.menus.destroy');
+});

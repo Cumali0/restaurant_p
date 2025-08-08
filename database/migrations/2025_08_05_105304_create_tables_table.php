@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');                   // Masa adı veya numarası
             $table->integer('capacity')->default(4); // Varsayılan kapasite
-            $table->enum('status', ['available', 'booked'])->default('available');
+
 
             $table->string('floor')->nullable();     // Kat bilgisi (opsiyonel)
             $table->timestamps();
