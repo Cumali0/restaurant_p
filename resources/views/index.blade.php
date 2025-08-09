@@ -573,7 +573,7 @@
                     // Boş masalar
                     data.available.forEach(table => {
                         const div = document.createElement('div');
-                        div.className = 'table available';
+                        div.className = 'table available col-md-4';
                         div.textContent = 'Masa ' + table.name;
                         div.style.cursor = 'pointer';
                         div.onclick = () => selectTable(table.id, div);
