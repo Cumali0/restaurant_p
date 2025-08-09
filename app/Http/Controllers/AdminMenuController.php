@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminMenuController extends Controller
 {
+
+
     public function index(Request $request)
     {
         $mode = $request->get('mode', 'index'); // index, create, edit

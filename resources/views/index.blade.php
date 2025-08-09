@@ -33,11 +33,11 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0 pe-4">
                 <a href="#" class="nav-item nav-link active">Ev</a>
-                <a href="#" class="nav-item nav-link">Hakkında</a>
+                <a href="#hakkimiz-section" class="nav-item nav-link">Hakkında</a>
                 <a href="#" class="nav-item nav-link">Servis</a>
-                <a href="#" class="nav-item nav-link">Menü</a>
+                <a href="#menu-section" class="nav-item nav-link">Menü</a>
                 <a href="#" class="nav-item nav-link">Sayfalar</a>
-                <a href="#" class="nav-item nav-link">İrtibat</a>
+                <a href="#irtibat-section" class="nav-item nav-link">İrtibat</a>
             </div>
             <a href="#" class="btn btn-primary py-2 px-4">MasaAyırt</a>
         </div>
@@ -146,7 +146,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div id="hakkimiz-section" class="col-lg-6">
                 <h5 class="Section-title ff-secondary text-start text-primary fw-normal">Hakkımızda</h5>
                 <h1 class="mb-4">Restorana<i class="fa fa-utensils text-primary me-2"></i>Hoşgeldiniz</h1>
                 <p class="mb-4"> Sizlere en taze malzemelerle hazırladığımız enfes lezzetlerimizi sunmak ve keyifli bir yemek deneyimi yaşatmak için buradayız. Afiyetle, güzel anılar biriktirmeniz dileğiyle.</p>
@@ -219,146 +219,32 @@
 
                 </li>
             </ul>
-            <div class="teb-content">
+            <div id="menu-section" class="teb-content">
                 <div class="tab-pane fade show p-0 active">
                     <div class="row g-4">
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-1.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Tavuk Burger</span>
-                                        <span class="text-primary">159TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        %100 tavuk göğsünden hazırlanan crispy köfte, susamlı ekmek, taze marul, domates, turşu, özel burger sosu ve cheddar peyniri ile servis edilen lezzetli Tavuk Burger.(Menüye kola + patates dahildir.)
-                                    </small>
-
+                        @foreach($menus as $menu)
+                            <link rel="stylesheet" href="/css/style.css">
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center">
+                                    @if($menu->image)
+                                        <img src="{{ asset('storage/' . $menu->image) }}" class="flex-shrink-0 img-fluid rounded hover-tilt" alt="{{ $menu->name }}" style="max-width: 200px; height: 200px; ">
+                                    @endif
+                                    <div class="w-100 d-flex-column text-start ps-4">
+                                        <h5 class="d-flex justify-content-between border-bottom pb-2">
+                                            <span>{{ $menu->name }}</span>
+                                            <span class="text-primary">{{ number_format($menu->price, 2) }} TL</span>
+                                        </h5>
+                                        <small class="fst-italic">
+                                            {{ $menu->description }}
+                                        </small>
+                                    </div>
                                 </div>
-
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-2.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
+                        @endforeach
 
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Et Burger</span>
-                                        <span class="text-primary">249TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        %100 dana etinden hazırlanan crispy köfte, susamlı ekmek, taze marul, domates, turşu, özel burger sosu ve cheddar peyniri ile servis edilen lezzetli Chicken Burger.(Menüye kola + patates dahildir.)
-                                    </small>
 
-                                </div>
 
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-3.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Pepperoni Pizza</span>
-                                        <span class="text-primary">199TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        İnce açılmış hamur üzerine mozzarella, pepperoni, mantar ve özel domates sosu ile taş fırında pişirilen lezzetli Pepperoni Pizza.(Menüye kola dahildir.)
-                                    </small>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-4.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Sezar Salata</span>
-                                        <span class="text-primary">249TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        Izgara tavuk, parmesan peyniri, kruton ve özel Caesar sosu ile hazırlanan hafif ve doyurucu Sezar Salata.
-                                    </small>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-5.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Spaghetti Bolognese</span>
-                                        <span class="text-primary">179TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        Spagetti üzerine bol domates sosu ve parmesan peyniriyle sunulan klasik İtalyan Spaghetti Bolognese.(Menüye kola dahildir.)
-                                    </small>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-6.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Mantı</span>
-                                        <span class="text-primary">150TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        Yoğurtlu sarımsaklı sos ve tereyağlı biber sosu ile servis edilen geleneksel Mantı.
-                                    </small>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-7.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Musakka</span>
-                                        <span class="text-primary">100TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        Fırında pişirilmiş, beşamel soslu, kıymalı ve patates katmanlarıyla hazırlanan nefis Musakka.
-                                    </small>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/menu-8.jpg') }}" class="flex-shrink-0 img-fluid rounded" alt="" style="max-width: 200px; height: 200px;">
-
-                                <div class="w-100 d-flex-column text-start ps-4">
-                                    <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                        <span>Sushi Roll</span>
-                                        <span class="text-primary">199TL</span>
-                                    </h5>
-                                    <small class="fst-italic">
-                                        Taze somon fileto, avokado, salatalık ve krem peynirle hazırlanan, susamlı nori yaprağına sarılı leziz Salmon Sushi Roll.
-                                    </small>
-
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>*/
+                    </div>
                 </div>
             </div>
 
@@ -404,10 +290,10 @@
                         </div>
 
                         <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="E-posta Adresi" required>
-                            <label for="email">E-posta Adresi</label>
-                        </div>
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="E-posta Adresi" required>
+                                <label for="email">E-posta Adresi</label>
+                            </div>
                         </div>
 
                         <!-- Tarih & Saat -->
@@ -563,7 +449,7 @@
             </div>
 
             <!-- Bağlantı -->
-            <div class="col-lg-3 col-md-6">
+            <div id="irtibat-section"  class="col-lg-3 col-md-6">
                 <h4  id="company-title"  class="section-title ff-secondary text-start text-primary fw-normal mb-4">Bağlantı</h4>
                 <p class="mb-2"><i class="fa fa-map-marker-alt"></i> Merkez : Çarşı Mah. Tabakhane Sok.No:14 Ortahisar / Trabzon</p>
                 <p class="mb-2"><i class="fa fa-phone-alt"></i> Tel :0542 361 78 45</p>
@@ -618,7 +504,7 @@
 
 <script>
 
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
 
         flatpickr("#datetimepicker", {
             enableTime: true,
@@ -644,91 +530,91 @@
         });
 
         function updateTimeLimits(fpInstance) {
-        const selectedDate = fpInstance.selectedDates[0];
-        if (!selectedDate) {
-        fpInstance.set('minTime', "09:00");
-        fpInstance.set('maxTime', "21:00");
-        return;
-    }
-        const day = selectedDate.getDay();
+            const selectedDate = fpInstance.selectedDates[0];
+            if (!selectedDate) {
+                fpInstance.set('minTime', "09:00");
+                fpInstance.set('maxTime', "21:00");
+                return;
+            }
+            const day = selectedDate.getDay();
 
-        if (day === 0) { // Pazar
-        fpInstance.set('minTime', "10:00");
-        fpInstance.set('maxTime', "20:00");
-    } else { // Pazartesi-Cumartesi
-        fpInstance.set('minTime', "09:00");
-        fpInstance.set('maxTime', "21:00");
-    }
-    }
+            if (day === 0) { // Pazar
+                fpInstance.set('minTime', "10:00");
+                fpInstance.set('maxTime', "20:00");
+            } else { // Pazartesi-Cumartesi
+                fpInstance.set('minTime', "09:00");
+                fpInstance.set('maxTime', "21:00");
+            }
+        }
 
         const tablesContainer = document.getElementById('tables-container');
         let selectedTableId = null;
 
-            function fetchAvailableTables(datetime) {
-                const duration = 90; // dakika
+        function fetchAvailableTables(datetime) {
+            const duration = 90; // dakika
 
-                fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        tablesContainer.innerHTML = '';
-                        selectedTableId = null;
-                        document.getElementById('selected_table_id').value = '';
-
-                        if (data.error) {
-                            tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
-                            return;
-                        }
-
-                        if (data.available.length === 0 && data.booked.length === 0) {
-                            tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
-                            return;
-                        }
-
-                        // Boş masalar
-                        data.available.forEach(table => {
-                            const div = document.createElement('div');
-                            div.className = 'table available';
-                            div.textContent = 'Masa ' + table.name;
-                            div.style.cursor = 'pointer';
-                            div.onclick = () => selectTable(table.id, div);
-                            tablesContainer.appendChild(div);
-                        });
-
-                        // Dolu masalar (kırmızı ve seçilemez)
-                        data.booked.forEach(table => {
-                            const div = document.createElement('div');
-                            div.className = 'table booked';
-                            div.textContent = 'Masa ' + table.name;
-                            div.style.opacity = '0.6';
-                            tablesContainer.appendChild(div);
-                        });
-                    })
-                    .catch(() => {
-                        tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
-                    });
-            }
-
-            function selectTable(id, element) {
-                if (element.classList.contains('booked')) return;  // dolu masa seçilemez
-
-                if (selectedTableId === id) {
+            fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
+                .then(res => res.json())
+                .then(data => {
+                    tablesContainer.innerHTML = '';
                     selectedTableId = null;
-                    element.classList.remove('selected');
                     document.getElementById('selected_table_id').value = '';
-                } else {
-                    selectedTableId = id;
-                    document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
-                    element.classList.add('selected');
-                    document.getElementById('selected_table_id').value = id;
-                }
+
+                    if (data.error) {
+                        tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                        return;
+                    }
+
+                    if (data.available.length === 0 && data.booked.length === 0) {
+                        tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
+                        return;
+                    }
+
+                    // Boş masalar
+                    data.available.forEach(table => {
+                        const div = document.createElement('div');
+                        div.className = 'table available';
+                        div.textContent = 'Masa ' + table.name;
+                        div.style.cursor = 'pointer';
+                        div.onclick = () => selectTable(table.id, div);
+                        tablesContainer.appendChild(div);
+                    });
+
+                    // Dolu masalar (kırmızı ve seçilemez)
+                    data.booked.forEach(table => {
+                        const div = document.createElement('div');
+                        div.className = 'table booked';
+                        div.textContent = 'Masa ' + table.name;
+                        div.style.opacity = '0.6';
+                        tablesContainer.appendChild(div);
+                    });
+                })
+                .catch(() => {
+                    tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
+                });
+        }
+
+        function selectTable(id, element) {
+            if (element.classList.contains('booked')) return;  // dolu masa seçilemez
+
+            if (selectedTableId === id) {
+                selectedTableId = null;
+                element.classList.remove('selected');
+                document.getElementById('selected_table_id').value = '';
+            } else {
+                selectedTableId = id;
+                document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
+                element.classList.add('selected');
+                document.getElementById('selected_table_id').value = id;
             }
+        }
 
 
-            function clearTables() {
-        tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
-        selectedTableId = null;
-        document.getElementById('selected_table_id').value = '';
-    }
+        function clearTables() {
+            tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
+            selectedTableId = null;
+            document.getElementById('selected_table_id').value = '';
+        }
 
     });
 </script>
