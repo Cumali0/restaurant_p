@@ -223,9 +223,9 @@
                 <div class="tab-pane fade show p-0 active">
                     <div class="row g-4">
                         @foreach($menus as $menu)
-
-                            <div class="col-lg-6 tilt-card">
-                                <div class="d-flex align-items-center img-container">
+                            <link rel="stylesheet" href="/css/style.css">
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center">
                                     @if($menu->image)
                                         <img src="{{ asset('storage/' . $menu->image) }}" class="flex-shrink-0 img-fluid rounded hover-tilt" alt="{{ $menu->name }}" style="max-width: 200px; height: 200px; ">
                                     @endif
@@ -573,7 +573,7 @@
                     // Boş masalar
                     data.available.forEach(table => {
                         const div = document.createElement('div');
-                        div.className = 'table available col-md-4';
+                        div.className = 'table available';
                         div.textContent = 'Masa ' + table.name;
                         div.style.cursor = 'pointer';
                         div.onclick = () => selectTable(table.id, div);
