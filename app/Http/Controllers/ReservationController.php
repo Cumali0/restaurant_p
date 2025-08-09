@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationStatusMail;
+use App\Models\Menu;
 
 class ReservationController extends Controller
 {
@@ -209,5 +210,13 @@ class ReservationController extends Controller
         // Verileri Blade'e gönderiyoruz
         return view('admin.analytics.index', compact('dailyReservations', 'monthlyReservations'));
 
+    }
+
+
+    public function showReservationForm()
+    {
+        $menus = Menu::where('active', 1)->get();
+
+        return view('reservation.form', compact('menus'));
     }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\ReservationController;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MenuController;
 
 Route::get('/', function () {
     return view('index'); // resources/views/index.blade.php
@@ -86,3 +87,5 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
 
 
+
+Route::get('/', [MenuController::class, 'index'])->name('home');
