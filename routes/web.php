@@ -6,6 +6,7 @@ use App\Http\Controllers\ReservationController;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\Admin\TableController;
 
 Route::get('/', function () {
     return view('index'); // resources/views/index.blade.php
@@ -19,10 +20,11 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 });
 
+Route::post('/dashboard/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard/reservations', [ReservationController::class, 'index'])->name('reservations.index');
-    Route::post('/dashboard/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+
     Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
     Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
     Route::post('/dashboard/reservations/{id}/reject', [ReservationController::class, 'reject'])->name('reservations.reject');
@@ -41,7 +43,7 @@ Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'de
 
 */
 
-Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability'])->name('tables.availability');
+
 
 
 Route::get('/dashboard/login', [AdminController::class, 'showLoginForm'])->name('dashboard.login');
@@ -52,8 +54,20 @@ Route::post('/dashboard/login', [AdminController::class, 'login'])->name('dashbo
 Route::post('/dashboard/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
 
+
+Route::get('/tables-availability', [ReservationController::class, 'tablesAvailability'])->name('tables.availability');
+
+
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('tables', App\Http\Controllers\Admin\TableController::class)->except(['create', 'edit', 'show']);
+
+});
+
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::resource('tables', App\Http\Controllers\Admin\TableController::class)->except(['create', 'edit', 'show']);
+
+    Route::get('/tables/{tableId}/reservations', [App\Http\Controllers\Admin\TableController::class, 'getReservations'])
+        ->name('tables.reservations');
 });
 
 
@@ -71,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::post('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('admin.profile.update');
 });
+
 
 
 

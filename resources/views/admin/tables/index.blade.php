@@ -1,100 +1,105 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Masa Yönetimi')
-
 @section('content')
     <div class="container-fluid px-4">
-    <div class="card w-100">
-        <div class="card-body">
-    <div class="table-page">
-        <h2 style="text-align:center; font-size: 28px; margin-bottom: 30px;">🍽️ Masa Yönetimi</h2>
+        <div class="card w-100">
+            <div class="card-body">
+                <div class="table-page">
+                    <h2 style="text-align:center; font-size: 28px; margin-bottom: 30px;">🍽️ Masa Yönetimi</h2>
 
-<div style="margin-bottom: 20px;">
-    <button class="btn btn-success" onclick="openAddModal()">➕ Yeni Masa Ekle</button>
-</div>
-
-
-
-        {{-- Filtre Formu --}}
-       <form method="GET" action="{{ route('tables.index') }}" style="margin-bottom:20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <label for="date">📅 Tarih:</label>
-    <input type="date" name="date" id="date" value="{{ request('date') }}" />
-
-    <label for="start_time">⏱ Başlangıç:</label>
-    <input type="time" name="start_time" id="start_time" value="{{ request('start_time') }}" />
-
-    <label for="end_time">⏳ Bitiş:</label>
-    <input type="time" name="end_time" id="end_time" value="{{ request('end_time') }}" />
-
-    <button type="submit" class="btn btn-primary">🔍 Filtrele</button>
-</form>
-
-
-        {{-- Masalar Tablosu --}}
-        <table class="table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ad</th>
-                <th>Kapasite</th>
-                <th>Kat</th>
-                <th>Rezervasyonlar</th>
-                <th>İşlemler</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($tables as $table)
-                <tr>
-                    <td>{{ $table->id }}</td>
-                    <td>{{ $table->name }}</td>
-                    <td>{{ $table->capacity }}</td>
-                    <td>{{ $table->floor }}</td>
-                    <td>
-                        @if(isset($reservations[$table->id]) && $reservations[$table->id]->count() > 0)
-                            <ul style="padding-left: 15px; margin: 0;">
-                                @foreach($reservations[$table->id] as $reservation)
-                                    <li style="margin-bottom: 8px;">
-                                        <strong>{{ $reservation->name }} {{ $reservation->surname }}</strong><br>
-                                        {{ \Carbon\Carbon::parse($reservation->datetime)->format('H:i') }} -
-                                        {{ \Carbon\Carbon::parse($reservation->end_datetime)->format('H:i') }}<br>
-                                        Kişi: {{ $reservation->people }}<br>
-                                        Durum: {{ ucfirst($reservation->status) }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <span style="color:green; font-weight:bold;">BOŞ</span>
-                        @endif
-                    </td>
-                    <td>
-                        <button class="btn btn-warning btn-sm"
-                                onclick="openEditModal({{ $table->id }}, '{{ $table->name }}', {{ $table->capacity }}, {{ $table->floor ?? 'null' }})">
-                            ✏ Düzenle
-                        </button>
-
-                        <form action="{{ route('tables.destroy', $table->id) }}" method="POST" class="inline-form" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Masa silinsin mi?')">🗑 Sil</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-        <!-- Görsel görünüm -->
-        <div id="gridView" style="display:none;">
-            <div class="tables-grid">
-                @foreach($tables as $table)
-                    <div class="table-icon"
-                         title="Kapasite: {{ $table->capacity }} - Kat: {{ $table->floor }}">
-                        {{ $table->name }}
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-success" onclick="openAddModal()">➕ Yeni Masa Ekle</button>
                     </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
+
+
+                    <form method="GET" action="{{ route('tables.index') }}" class="d-flex gap-2 mb-3 align-items-center">
+
+                        <select name="capacity" class="form-control" style="width: 150px;">
+                            <option value="">Kapasite (Tümü)</option>
+                            @foreach($capacities as $capacity)
+                                <option value="{{ $capacity }}" {{ request('capacity') == $capacity ? 'selected' : '' }}>{{ $capacity }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="floor" class="form-control" style="width: 150px;">
+                            <option value="">Kat (Tümü)</option>
+                            @foreach($floors as $floor)
+                                <option value="{{ $floor }}" {{ request('floor') == $floor ? 'selected' : '' }}>{{ $floor }}</option>
+                            @endforeach
+                        </select>
+
+                        <button type="submit" class="btn btn-primary btn-sm">Filtrele</button>
+                        <a href="{{ route('tables.index') }}" class="btn btn-secondary btn-sm">Temizle</a>
+
+                    </form>
+
+
+                    {{-- Masalar Tablosu --}}
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ad</th>
+                            <th>Kapasite</th>
+                            <th>Kat</th>
+                            <th>İşlemler</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($tables as $table)
+                            <tr>
+                                <td>{{ $table->id }}</td>
+                                <td>{{ $table->name }}</td>
+                                <td>{{ $table->capacity }}</td>
+                                <td>{{ $table->floor }}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="openReservationsModal({{ $table->id }}, '{{ $table->name }}')">
+                                        📋 Detay
+                                    </button>
+
+                                    <button class="btn btn-warning btn-sm"
+                                            onclick="openEditModal({{ $table->id }}, '{{ $table->name }}', {{ $table->capacity }}, {{ $table->floor ?? 'null' }})">
+                                        ✏ Düzenle
+                                    </button>
+
+                                    <form action="{{ route('tables.destroy', $table->id) }}" method="POST" class="inline-form" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Masa silinsin mi?')">🗑 Sil</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Rezervasyon Modal -->
+                <div class="modal" id="reservationsModal" style="display:none;">
+                    <div class="modal-content" style="max-width: 600px; background:white; padding:15px; border-radius:10px;">
+                        <h3 id="reservationsTitle">Rezervasyonlar</h3>
+
+                        <form id="reservationFilterForm" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                            <input type="hidden" id="filterTableId" name="table_id">
+                            <input type="date" id="filterDate" name="date">
+                            <input type="time" id="filterStartTime" name="start_time">
+                            <input type="time" id="filterEndTime" name="end_time">
+                            <button type="submit" class="btn btn-primary btn-sm">Filtrele</button>
+                        </form>
+
+                        <div id="reservationsList">
+                            Yükleniyor...
+                        </div>
+
+                        <div class="modal-buttons" style="margin-top: 15px;">
+                            <button type="button" class="btn btn-secondary" onclick="closeReservationsModal()">Kapat</button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
 
         <!-- Modal Yapıları -->
         <div class="modal" id="addModal" style="display:none;">
@@ -129,10 +134,12 @@
                 </form>
             </div>
         </div>
+
+            </div>
         </div>
     </div>
-    </div>
-        <style>
+
+    <style>
         /* Genel sayfa stili */
         .table-page {
             padding: 20px;
@@ -386,33 +393,10 @@
             justify-content: center;
         }
 
-        </style>
+    </style>
 
+    {{-- JavaScript Kodları --}}
     <script>
-
-
-        // Toggle Görünüm
-        document.addEventListener('DOMContentLoaded', function () {
-            const tableViewBtn = document.getElementById('tableViewBtn');
-            const gridViewBtn = document.getElementById('gridViewBtn');
-            const tableView = document.getElementById('tableView');
-            const gridView = document.getElementById('gridView');
-
-            tableViewBtn.addEventListener('click', () => {
-                tableView.style.display = 'block';
-                gridView.style.display = 'none';
-                tableViewBtn.classList.add('active');
-                gridViewBtn.classList.remove('active');
-            });
-
-            gridViewBtn.addEventListener('click', () => {
-                tableView.style.display = 'none';
-                gridView.style.display = 'block';
-                gridViewBtn.classList.add('active');
-                tableViewBtn.classList.remove('active');
-            });
-        });
-
         function openAddModal() {
             document.getElementById('addModal').style.display = 'flex';
         }
@@ -424,13 +408,58 @@
             document.getElementById('editModal').style.display = 'flex';
             document.getElementById('editName').value = name;
             document.getElementById('editCapacity').value = capacity;
-            document.getElementById('editFloor').value = floor;
-            document.getElementById('editForm').action = '/admin/tables/' + id;  // Burada id boş olmasın!
+            document.getElementById('editFloor').value = floor || '';
+            document.getElementById('editForm').action = `/admin/tables/${id}`;
         }
-
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
-    </script>
 
+
+
+        function openReservationsModal(tableId, tableName) {
+            document.getElementById('reservationsTitle').innerText = "Masa " + tableName + " Rezervasyonları";
+            document.getElementById('filterTableId').value = tableId;
+
+            fetchReservations(tableId); // İlk açıldığında rezervasyonları getir
+            document.getElementById('reservationsModal').style.display = 'block';
+        }
+
+        function closeReservationsModal() {
+            document.getElementById('reservationsModal').style.display = 'none';
+        }
+
+        function fetchReservations(tableId, filters = {}) {
+            let url = `/admin/tables/${tableId}/reservations`;
+
+
+
+            // Filtre parametreleri ekleme
+            let params = new URLSearchParams(filters).toString();
+            if (params) {
+                url += `?${params}`;
+            }
+
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('reservationsList').innerHTML = html;
+                })
+                .catch(() => {
+                    document.getElementById('reservationsList').innerHTML = "Hata oluştu.";
+                });
+        }
+
+        // Filtre formu submit olunca çalışır
+        document.getElementById('reservationFilterForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let tableId = document.getElementById('filterTableId').value;
+            let filters = {
+                date: document.getElementById('filterDate').value,
+                start_time: document.getElementById('filterStartTime').value,
+                end_time: document.getElementById('filterEndTime').value
+            };
+            fetchReservations(tableId, filters);
+        });
+    </script>
 @endsection

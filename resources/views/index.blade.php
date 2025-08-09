@@ -223,9 +223,9 @@
                 <div class="tab-pane fade show p-0 active">
                     <div class="row g-4">
                         @foreach($menus as $menu)
-
-                            <div class="col-lg-6 tilt-card">
-                                <div class="d-flex align-items-center img-container">
+                            <link rel="stylesheet" href="/css/style.css">
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center">
                                     @if($menu->image)
                                         <img src="{{ asset('storage/' . $menu->image) }}" class="flex-shrink-0 img-fluid rounded hover-tilt" alt="{{ $menu->name }}" style="max-width: 200px; height: 200px; ">
                                     @endif
@@ -271,7 +271,7 @@
                     Rezervasyon
                 </h5>
                 <h1 class="text-white mb-4">Online Masa Kaydı</h1>
-                <form action="{{ route('reservations.store') }}" method="POST">
+                <form id="reservationForm" action="{{ route('reservations.store') }}" method="POST">
                     @csrf
                     <div class="row g-3">
                         <!-- Ad -->
@@ -316,7 +316,7 @@
                         </div>
 
                         <!-- Masalar Dinamik Listesi -->
-                        <div class="col-12" id="tables-container" style="margin-top: 15px;">
+                        <div class="col-12" id="tables-container" style="margin-top: 15px; display: flex;">
                             <p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>
                         </div>
 
@@ -334,9 +334,21 @@
                         <div class="col-12">
                             <button class="btn btn-primary w-100 py-3" type="submit">Şimdi Rezervasyon Yap</button>
                         </div>
+
+                        <div class="col-12 mt-2">
+                            @if(session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                            @elseif(session('error'))
+                                <div class="alert alert-danger">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </form>
-
+                <div id="reservationResult"></div>
             </div>
         </div>
     </div>
@@ -504,6 +516,65 @@
 
 <script>
 
+
+
+    document.getElementById('reservationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        if (!formData.get('table_id') || !formData.get('date') || !formData.get('start_time') || !formData.get('end_time')) {
+            document.getElementById('reservationResult').innerHTML = '<p style="color:red;">Lütfen masa, tarih ve zamanı seçiniz.</p>';
+            return;
+        }
+
+        const date = formData.get('date');
+        const startTime = formData.get('start_time');
+        const endTime = formData.get('end_time');
+
+        const datetime = date + ' ' + startTime;
+        const end_datetime = date + ' ' + endTime;
+
+        const newFormData = new FormData();
+
+        for (const [key, value] of formData.entries()) {
+            if (!['date', 'start_time', 'end_time'].includes(key)) {
+                newFormData.append(key, value);
+            }
+        }
+
+        newFormData.append('datetime', datetime);
+        newFormData.append('end_datetime', end_datetime);
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': formData.get('_token'),
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: newFormData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('reservationResult').innerHTML = `<p style="color:green;">${data.message}</p>`;
+                    form.reset();
+                } else {
+                    document.getElementById('reservationResult').innerHTML = `<p style="color:red;">${data.message || 'Rezervasyon yapılamadı.'}</p>`;
+                }
+            })
+            .catch(() => {
+                document.getElementById('reservationResult').innerHTML = '<p style="color:red;">Sunucu hatası oluştu.</p>';
+            });
+    });
+
+
+
+
+
+
     document.addEventListener('DOMContentLoaded', function() {
 
         flatpickr("#datetimepicker", {
@@ -573,7 +644,7 @@
                     // Boş masalar
                     data.available.forEach(table => {
                         const div = document.createElement('div');
-                        div.className = 'table available col-md-4';
+                        div.className = 'table available';
                         div.textContent = 'Masa ' + table.name;
                         div.style.cursor = 'pointer';
                         div.onclick = () => selectTable(table.id, div);
@@ -615,6 +686,9 @@
             selectedTableId = null;
             document.getElementById('selected_table_id').value = '';
         }
+
+
+
 
     });
 </script>

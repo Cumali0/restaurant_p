@@ -38,53 +38,53 @@
 
             <a href="{{ route('dashboard') }}">
                 <span class="material-icons-sharp">grid_view</span>
-                <h3>Dashboard</h3>
+                <h3>Kontrol Paneli</h3>
             </a>
 
             <a href="{{ route('tables.index') }}">
                 <span class="material-icons-sharp">person_outline</span>
-                <h3>Customers</h3>
+                <h3>Masa Yönetimi</h3>
             </a>
 
             <a href="{{ route('reservations.index') }}">
                 <span class="material-icons-sharp">receipt_long</span>
-                <h3>Orders</h3>
+                <h3>Rezervasyon Listesi</h3>
             </a>
 
             <a href="{{ route('analytics.index') }}">
                 <span class="material-icons-sharp">insights</span>
-                <h3>Analytics</h3>
+                <h3>Analitik</h3>
             </a>
 
             <a href="#">
                 <span class="material-icons-sharp">mail_outline</span>
-                <h3>Messages</h3>
+                <h3>Mesajlar</h3>
                 <span class="message-count">26</span>
             </a>
 
             <a href="{{ route('admin.menus.index') }}">
                 <span class="material-icons-sharp">inventory</span>
-                <h3>Products</h3>
+                <h3>Ürün Yönetimi</h3>
             </a>
 
             <a href="#">
                 <span class="material-icons-sharp">report_gmailerrorred</span>
-                <h3>Reports</h3>
+                <h3>Rapor</h3>
             </a>
 
             <a href="{{ route('admin.profile.edit') }}">
                 <span class="material-icons-sharp">settings</span>
-                <h3>Settings</h3>
+                <h3>Ayarlar</h3>
             </a>
 
             <a href="#">
                 <span class="material-icons-sharp">add</span>
-                <h3>Add Product</h3>
+                <h3>...</h3>
             </a>
 
             <a href="#" id="logout-link">
                 <span class="material-icons-sharp">logout</span>
-                <h3>Logout</h3>
+                <h3>Oturumu Kapat</h3>
             </a>
 
 
@@ -216,7 +216,7 @@
             </div>
             <div class="profile">
                 <div class="info">
-                    <p>Hey, <b>Tom</b> </p>
+                    <p>Hoşgeldin, {{ auth()->user()->name }}</p>
                     <small class="text-muted">Admin</small>
                 </div>
 

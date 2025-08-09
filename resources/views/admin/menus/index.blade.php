@@ -10,15 +10,25 @@
 
 
             {{-- Kategoriye Göre Filtreleme --}}
-            <form method="GET" action="{{ route('admin.menus.index') }}" class="mb-3 d-flex justify-content-center gap-2">
-                <select name="category" class="form-select" onchange="this.form.submit()" style="max-width: 300px;">
-                    <option value="">Tüm Kategoriler</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+            <form method="GET" action="{{ route('admin.menus.index') }}" class="mb-3 d-flex gap-2 align-items-center flex-wrap">
+
+                <input type="text" name="name" value="{{ request('name') }}" placeholder="Menu Adı" class="form-control" style="max-width: 200px;">
+
+                <select name="category" class="form-control" style="max-width: 150px;">
+                    <option value="">Kategori (Tümü)</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>{{ $category }}</option>
                     @endforeach
                 </select>
-                <noscript><button type="submit" class="btn btn-primary">Filtrele</button></noscript>
+
+                <input type="number" step="1" name="min_price" value="{{ request('min_price') }}" placeholder="Min Fiyat" class="form-control" style="max-width: 120px;">
+
+                <input type="number" step="1" name="max_price" value="{{ request('max_price') }}" placeholder="Max Fiyat" class="form-control" style="max-width: 120px;">
+
+                <button type="submit" class="btn btn-primary btn-sm">Filtrele</button>
+                <a href="{{ route('admin.menus.index') }}" class="btn btn-secondary btn-sm">Temizle</a>
             </form>
+
 
             {{-- Başarılı işlem mesajı --}}
             @if(session('success'))

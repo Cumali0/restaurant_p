@@ -476,6 +476,27 @@
     background-color: #d9534f; /* kırmızı ton */
     color: white;
     cursor: not-allowed;
+
+
+    /* Sadece #menu-section içindeki img.hover-tilt için */
+
+    .flex-shrink-0.img-fluid.rounded.hover-tilt {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        perspective: 1000px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .flex-shrink-0.img-fluid.rounded.hover-tilt:hover {
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);!important;
+    }
+
+
+
+
 }
 
 .flex-shrink-0.img-fluid.rounded.hover-tilt {
@@ -580,3 +601,4 @@
     filter: brightness(1.2);
 }
 
+.tables

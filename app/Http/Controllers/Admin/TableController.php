@@ -13,50 +13,65 @@ class TableController extends Controller
 {
 
 
+
     public function index(Request $request)
     {
-        $date = $request->input('date');
-        $startTime = $request->input('start_time');
-        $endTime = $request->input('end_time');
-
         $tables = Table::all();
+        // Kapasite ve kat için benzersiz değerleri alalım (filtre dropdownları için)
+        $capacities = Table::select('capacity')->distinct()->orderBy('capacity')->pluck('capacity');
+        $floors = Table::select('floor')->distinct()->orderBy('floor')->pluck('floor');
 
-        $reservations = collect();
+        // Query builder ile tablodaki masaları sorgula
+        $query = Table::query();
 
-        if ($date) {
-            // Zaman aralığını oluştur
-            if ($startTime && $endTime) {
-                $startDateTime = \Carbon\Carbon::parse("$date $startTime");
-                $endDateTime = \Carbon\Carbon::parse("$date $endTime");
-            } elseif ($startTime && !$endTime) {
-                $startDateTime = \Carbon\Carbon::parse("$date $startTime");
-                $endDateTime = (clone $startDateTime)->addHours(2);
-            } else {
-                $startDateTime = \Carbon\Carbon::parse("$date 00:00:00");
-                $endDateTime = \Carbon\Carbon::parse("$date 23:59:59");
-            }
-
-            $filteredReservations = \App\Models\Reservation::whereIn('status', ['reserved', 'approved'])
-                ->where(function ($query) use ($startDateTime, $endDateTime) {
-                    $query->where(function ($q) use ($startDateTime, $endDateTime) {
-                        $q->whereBetween('datetime', [$startDateTime, $endDateTime])
-                            ->orWhereBetween('end_datetime', [$startDateTime, $endDateTime])
-                            ->orWhere(function ($q2) use ($startDateTime, $endDateTime) {
-                                $q2->where('datetime', '<', $startDateTime)
-                                    ->where('end_datetime', '>', $endDateTime);
-                            });
-                    });
-                })
-                ->orderBy('datetime')
-                ->get();
-
-            $reservations = $filteredReservations->groupBy('table_id');
+        if ($request->filled('capacity')) {
+            $query->where('capacity', $request->capacity);
         }
 
-        // Doluluk kontrolü için dolu masa id’lerini al
-        $reservedTables = $reservations->keys()->toArray();
+        if ($request->filled('floor')) {
+            $query->where('floor', $request->floor);
+        }
 
-        return view('admin.tables.index', compact('tables', 'reservations', 'reservedTables', 'date', 'startTime', 'endTime'));
+        $tables = $query->get();
+
+        return view('admin.tables.index', compact('tables', 'capacities', 'floors'));
+    }
+
+    // AJAX ile rezervasyonları döndüren method
+    public function getReservations(Request $request, $tableId)
+    {
+        $query = Reservation::where('table_id', $tableId);
+
+        if ($request->date) {
+            $query->whereDate('datetime', $request->date);
+        }
+
+        if ($request->start_time) {
+            $query->whereTime('datetime', '>=', $request->start_time);
+        }
+
+        if ($request->end_time) {
+            $query->whereTime('end_datetime', '<=', $request->end_time);
+        }
+
+        $reservations = $query->orderBy('datetime')->get();
+
+        // Burada direkt HTML döndürüyoruz
+        if ($reservations->count() > 0) {
+            $html = '<ul style="list-style:none; padding:0;">';
+            foreach ($reservations as $reservation) {
+                $html .= '<li style="border-bottom: 1px solid #ddd; padding: 8px 0;">
+                    <strong>' . e($reservation->name) . ' ' . e($reservation->surname) . '</strong><br>
+                    ' . $reservation->datetime->format('H:i') . ' - ' . $reservation->end_datetime->format('H:i') . '<br>
+                    Kişi: ' . e($reservation->people) . ' | Durum: ' . ucfirst($reservation->status) . '
+                </li>';
+            }
+            $html .= '</ul>';
+        } else {
+            $html = '<p style="color:green;">Bu masada rezervasyon yok.</p>';
+        }
+
+        return response($html);
     }
 
 
@@ -81,7 +96,7 @@ class TableController extends Controller
         $request->validate([
             'name' => 'required',
             'capacity' => 'required|integer',
-           // 'status' => 'required|in:available,booked',
+
             'floor' => 'nullable|integer',
         ]);
 

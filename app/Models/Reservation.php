@@ -20,6 +20,7 @@ class Reservation extends Model
         'people',
         'message',
         'status',
+        'total_price',
     ];
 
     protected $casts = [

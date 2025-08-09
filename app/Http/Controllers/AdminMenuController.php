@@ -26,12 +26,26 @@ class AdminMenuController extends Controller
         if ($mode === 'index') {
             $query = Menu::orderBy('created_at', 'desc');
 
-            // Kategori filtresi uygulanırsa
+            // Kategori filtresi
             if ($request->filled('category')) {
                 $query->where('category', $request->category);
             }
 
+            // İsim filtresi (kısmi arama)
+            if ($request->filled('name')) {
+                $query->where('name', 'like', '%' . $request->name . '%');
+            }
+
+            // Fiyat filtresi
+            if ($request->filled('min_price')) {
+                $query->where('price', '>=', $request->min_price);
+            }
+            if ($request->filled('max_price')) {
+                $query->where('price', '<=', $request->max_price);
+            }
+
             $menus = $query->paginate(10)->withQueryString();
+
         } elseif ($mode === 'edit') {
             $id = $request->get('menu');
             if (!$id) {
@@ -39,6 +53,7 @@ class AdminMenuController extends Controller
             }
             $menu = Menu::findOrFail($id);
         }
+
         // create modda menu gerekmez
 
         return view('admin.menus.index', compact('mode', 'menus', 'menu', 'categories'));

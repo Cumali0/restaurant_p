@@ -33,19 +33,53 @@ class ReservationController extends Controller
 
 
 
-    // Rezervasyonları listeleme
-    public function index()
+
+
+    public function index(Request $request)
     {
-        $reservations = Reservation::orderBy('datetime', 'desc')->get();
+        $query = Reservation::query();
+
+        if ($request->filled('table_id')) {
+            $query->where('table_id', $request->input('table_id'));
+        }
+
+        if ($request->filled('name')) {
+            $name = $request->input('name');
+            $query->where(function ($q) use ($name) {
+                $q->where('name', 'like', "%{$name}%")
+                    ->orWhere('surname', 'like', "%{$name}%");
+            });
+        }
+
+        $start = $request->input('datetime_start');
+        $end = $request->input('datetime_end');
+
+        if ($start && $end) {
+            $startDate = Carbon::parse($start)->format('Y-m-d H:i:s');
+            $endDate = Carbon::parse($end)->format('Y-m-d H:i:s');
+
+            $query->where(function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('datetime', [$startDate, $endDate])
+                    ->orWhereBetween('end_datetime', [$startDate, $endDate])
+                    ->orWhere(function ($q2) use ($startDate, $endDate) {
+                        $q2->where('datetime', '<=', $startDate)
+                            ->where('end_datetime', '>=', $endDate);
+                    });
+            });
+        } elseif ($start) {
+            $startDate = Carbon::parse($start)->format('Y-m-d H:i:s');
+            $query->where('datetime', '>=', $startDate);
+        } elseif ($end) {
+            $endDate = Carbon::parse($end)->format('Y-m-d H:i:s');
+            $query->where('end_datetime', '<=', $endDate);
+        }
+
+        $reservations = $query->orderBy('datetime', 'desc')->paginate(10)->withQueryString();
+
         return view('admin.reservations.index', compact('reservations'));
     }
 
-    // Yeni rezervasyon formu
-    public function create()
-    {
-        $tables = Table::orderBy('name')->get();
-        return view('admin.reservations.create', compact('tables'));
-    }
+
 
     // Yeni rezervasyon ekleme
     public function store(Request $request)
@@ -54,7 +88,7 @@ class ReservationController extends Controller
             'table_id' => 'required|exists:tables,id',
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
-            'email' => 'required|email|max:255',   // Zorunlu ve geçerli email kontrolü
+            'email' => 'required|email|max:255',
             'datetime' => 'required|date_format:Y-m-d H:i',
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
@@ -62,12 +96,11 @@ class ReservationController extends Controller
         ]);
 
         $start = Carbon::createFromFormat('Y-m-d H:i', $request->datetime);
-        $duration = (int) $request->input('duration', 90);  // kesin int cast
-
+        $duration = (int) $request->input('duration', 90);
         $end = $start->copy()->addMinutes($duration);
 
-        // Çalışma saatleri kontrolü
-        $day = $start->dayOfWeek; // 0 = Pazar
+        // Çalışma saatleri kontrolü (aynı şekilde)
+        $day = $start->dayOfWeek;
         $time = $start->format('H:i');
 
         if ($day === 0) {
@@ -80,7 +113,7 @@ class ReservationController extends Controller
             }
         }
 
-        // Çakışma kontrolü (rezervasyon zaman aralıkları örtüşüyor mu)
+        // Çakışma kontrolü
         $conflict = Reservation::where('table_id', $request->table_id)
             ->whereIn('status', ['reserved', 'approved'])
             ->where(function ($query) use ($start, $end) {
@@ -95,22 +128,35 @@ class ReservationController extends Controller
             return back()->withErrors(['table_id' => 'Seçilen masa bu zaman aralığında doludur!'])->withInput();
         }
 
-        // Yeni rezervasyon oluştur
-        Reservation::create([
-            'table_id' => $request->table_id,
-            'name' => $request->name,
-            'surname' => $request->surname,
-            'email' => $request->email,
-            'datetime' => $start,
-            'end_datetime' => $end,
-            'people' => $request->people,
-            'message' => $request->message,
-            'status' => 'reserved',
-        ]);
+        try {
+            Reservation::create([
+                'table_id' => $request->table_id,
+                'name' => $request->name,
+                'surname' => $request->surname,
+                'email' => $request->email,
+                'datetime' => $start,
+                'end_datetime' => $end,
+                'people' => $request->people,
+                'message' => $request->message,
+                'status' => 'reserved',
+            ]);
 
-        return redirect()->route('reservation.thankyou')
-            ->with('success', 'Rezervasyonunuz başarıyla oluşturuldu!');
+            // Eğer ajax isteği ise JSON dön
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Rezervasyon başarıyla gönderildiii.']);
+            }
+
+            // Değilse redirect
+            return back()->with('success', 'Rezervasyon başarıyla gönderildi.');
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Rezervasyon gönderilirken hata oluştu.']);
+            }
+            return back()->with('error', 'Rezervasyon gönderilirken hata oluştu.');
+        }
     }
+
+
 
     // Rezervasyonu onaylama
     public function approve($id)
