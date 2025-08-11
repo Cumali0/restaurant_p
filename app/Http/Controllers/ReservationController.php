@@ -74,7 +74,7 @@ class ReservationController extends Controller
             $query->where('end_datetime', '<=', $endDate);
         }
 
-        $reservations = $query->orderBy('datetime', 'desc')->paginate(10)->withQueryString();
+        $reservations = $query->orderBy('datetime', 'asc')->paginate(10)->withQueryString();
 
         return view('admin.reservations.index', compact('reservations'));
     }

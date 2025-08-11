@@ -97,7 +97,7 @@
 
     <main>
 
-        <h1>Dashoard</h1>
+        <h1>Admin Panel</h1>
 
         <div class="date">
 
@@ -110,7 +110,7 @@
                 <span class="material-icons-sharp">analytics</span>
                 <div class="middle">
                     <div class="left">
-                        <h3>Total Sales</h3>
+                        <h3>Toplam Satış</h3>
                         <h1>$25,024</h1>
                     </div>
                     <div class="progress">
@@ -122,14 +122,14 @@
                         </div>
                     </div>
                 </div>
-                <small class="text-muted">Last 24 Hours</small>
+                <small class="text-muted">Son 24 Saate</small>
             </div>
             <!----------------END OF SALES--------------->
             <div class="expenses">
                 <span class="material-icons-sharp">analytics</span>
                 <div class="middle">
                     <div class="left">
-                        <h3>Total Expenses</h3>
+                        <h3>Toplam Giderler</h3>
                         <h1>$14,160</h1>
                     </div>
                     <div class="progress">
@@ -141,14 +141,14 @@
                         </div>
                     </div>
                 </div>
-                <small class="text-muted">Last 24 Hours</small>
+                <small class="text-muted">Son 24 Saate</small>
             </div>
             <!----------------END OF EXPENT--------------->
             <div class="income">
                 <span class="material-icons-sharp">bar_chart</span>
                 <div class="middle">
                     <div class="left">
-                        <h3>Total Income</h3>
+                        <h3>Toplam Gelir</h3>
                         <h1>$10,864</h1>
                     </div>
                     <div class="progress">
@@ -160,14 +160,14 @@
                         </div>
                     </div>
                 </div>
-                <small class="text-muted">Last 24 Hours</small>
+                <small class="text-muted">Son 24 Saate</small>
             </div>
             <!----------------END OF INCOME--------------->
         </div>
         <!--------------------END OF INSIGHTS-------------->
 
         <div class="recent-orders">
-            <h2>Recent Orders</h2>
+            <h2>Son Rezarvasyonlar</h2>
             <table>
                 <thead>
                 <tr>
@@ -198,7 +198,7 @@
 
                 </tbody>
             </table>
-            <a href="{{ route('reservations.index') }}">Show All</a>
+            <a href="{{ route('reservations.index') }}">Hepsini Göster</a>
         </div>
 
     </main>
@@ -227,7 +227,7 @@
         </div>
         <!-----END OF TOP  ------->
         <div class="recent-updates">
-            <h2>Recent Updates</h2>
+            <h2>Son Güncellemeler</h2>
             <div class="updates">
                 <div class="update">
                     <div class="profile-photo">
@@ -270,7 +270,7 @@
         <!-------------------END OF RECENT UPDATES ------------------>
 
         <div class="sales-analytics">
-            <h2>Sales Analytics</h2>
+            <h2>Satış Analistleri</h2>
 
             <div class="item online">
                 <div class="icon">
@@ -278,8 +278,8 @@
                 </div>
                 <div class="right">
                     <div class="info">
-                        <h3>ONLINE ORDERS</h3>
-                        <small class="text-muted">Last 24 Hours</small>
+                        <h3>ONLINE Siparişler</h3>
+                        <small class="text-muted">Son 24 Saate</small>
                     </div>
                     <h5 class="success">+39%</h5>
                     <h3>3849</h3>
@@ -292,8 +292,8 @@
                 </div>
                 <div class="right">
                     <div class="info">
-                        <h3>OFFLINE ORDERS</h3>
-                        <small class="text-muted">Last 24 Hours</small>
+                        <h3>OFFLINE Siparişler</h3>
+                        <small class="text-muted">Son 24 Saate</small>
                     </div>
                     <h5 class="danger">-17%</h5>
                     <h3>1100</h3>
@@ -306,8 +306,8 @@
                 </div>
                 <div class="right">
                     <div class="info">
-                        <h3>NEW CUSTOMERS</h3>
-                        <small class="text-muted">Last 24 Hours</small>
+                        <h3>Yeni Müşteriler</h3>
+                        <small class="text-muted">Son 24 Saate</small>
                     </div>
                     <h5 class="success">+25%</h5>
                     <h3>849</h3>
@@ -316,7 +316,7 @@
             <div class="item add-product">
                 <div>
                     <span class="material-icons-sharp">add</span>
-                    <h3>Add Product</h3>
+                    <h3>Ekle...</h3>
                 </div>
             </div>
         </div>

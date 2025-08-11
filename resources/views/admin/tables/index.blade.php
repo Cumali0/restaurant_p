@@ -76,7 +76,8 @@
 
                 <!-- Rezervasyon Modal -->
                 <div class="modal" id="reservationsModal" style="display:none;">
-                    <div class="modal-content" style="max-width: 600px; background:white; padding:15px; border-radius:10px;">
+                    <div class="modal-dialog modal-dialog-centered"> <!-- ✅ ortalamak için burası önemli -->
+                    <div class="modal-content" style="max-width: 600px; background:white; padding:15px; border-radius:10px; margin:768px; margin-top:185px; overflow-y: auto; ">
                         <h3 id="reservationsTitle">Rezervasyonlar</h3>
 
                         <form id="reservationFilterForm" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
@@ -96,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-
+                </div>
 
 
 

@@ -3,58 +3,73 @@
 @section('title', 'Rezervasyon Analizi')
 
 @section('content')
-    <div style="max-width: 900px; margin: 0 auto; padding: 20px;">
-        <h1 style="margin-bottom: 30px;">Rezervasyon Analizi</h1>
+    <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
 
-        <h2 style="margin-top: 20px; margin-bottom: 15px;">Günlük Rezervasyonlar (Son 30 Gün)</h2>
-        <canvas id="dailyChart" width="600" height="300"></canvas>
+        <h1>Rezervasyon Analizi</h1>
 
-        <h2 style="margin-top: 40px; margin-bottom: 15px;">Aylık Rezervasyonlar (Son 12 Ay)</h2>
-        <canvas id="monthlyChart" width="600" height="300"></canvas>
+        <div class="charts-container  " style="    height: 340px; width: 1400px; margin-top: 175px;">
+            <div class="chart-box">
+                <h2>Günlük Rezervasyonlar (Son 30 Gün)</h2>
+                <canvas id="dailyChart"   style="  display: block;     box-sizing: border-box;  height: 254px;  width: 508px;"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h2>Aylık Rezervasyonlar (Son 12 Ay)</h2>
+                <canvas id="monthlyChart"  style="  display: block;     box-sizing: border-box;  height: 254px;  width: 508px;" ></canvas>
+            </div>
+        </div>
+
     </div>
-
 @endsection
 
 @push('styles')
     <style>
-        canvas {
+        .charts-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;  /* Grafikleri birbirinden ayıran boşluk */
+            flex-wrap: wrap; /* Küçük ekranlarda alt alta geçecek */
+        }
+
+        .chart-box {
+            flex: 1 1 450px; /* Esnek genişlik, min 450px */
+            max-width: 675px;
+            text-align: center; /* Başlık ve grafik ortalanır */
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #ccc;
-            padding: 10px;
-            max-width: 100%;
-            height: auto !important;
-
-            /* Hover efektleri için geçiş */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
         }
 
-        /* Hover'da büyü ve gölge artışı */
-        canvas:hover {
+        .chart-box:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            z-index: 10;
             position: relative;
+            z-index: 10;
         }
 
-        /* Başlıklar için biraz daha stil */
-        h1 {
-            font-weight: 700;
-            color: #2c3e50;
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-        }
-
-        h2 {
+        .chart-box h2 {
+            margin-bottom: 15px;
             font-weight: 600;
             color: #34495e;
-            margin-bottom: 1rem;
             border-bottom: 2px solid #3498db;
             padding-bottom: 0.3rem;
+        }
+
+        /* Responsive için */
+        @media (max-width: 1000px) {
+            .charts-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chart-box {
+                max-width: 90vw;
+                margin-bottom: 30px;
+            }
         }
     </style>
 @endpush

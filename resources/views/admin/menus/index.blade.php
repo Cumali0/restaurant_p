@@ -88,7 +88,7 @@
                         @endforeach
                     </div>
 
-                    <div class="mt-3">{{ $menus->withQueryString()->links() }}</div>
+
                 @endif
 
             @elseif($mode == 'create' || $mode == 'edit')
@@ -547,6 +547,259 @@
                 border-radius: 12px;
             }
 
+            /* Sayfalama kapsayıcı */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                padding-left: 0;
+                list-style: none;
+                border-radius: 0.5rem;
+                gap: 0.6rem;
+            }
+
+            .pagination {
+
+                justify-content: center;
+                padding-left: 0;
+                list-style: none;
+                border-radius: 0.5rem;
+                user-select: none;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                display: flex !important;
+                flex-wrap: nowrap !important;  /* tek satırda dizilsin */
+                gap: 0.6rem;                   /* aradaki boşluk */
+                overflow-x: visible !important; /* taşarsa scroll değil taşsın, scroll istemiyoruz */
+            }
+
+            /* Sayfa numarası butonları genel */
+            .pagination li a,
+            .pagination li span {
+                color: #495057;
+                background-color: #f8f9fa;
+                border: 1.7px solid #dee2e6;
+                padding: 9px 12px;
+                text-decoration: none;
+                font-weight: 700;
+                border-radius: 50%;
+                min-width: 44px;
+                height: 44px;
+                line-height: 26px;
+                text-align: center;
+                transition:
+                    background-color 0.35s ease,
+                    color 0.35s ease,
+                    box-shadow 0.35s ease,
+                    border-color 0.35s ease,
+                    transform 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-sizing: border-box;
+                box-shadow: inset 0 0 5px #fff8; /* Hafif iç parlama */
+            }
+
+            /* Hover ve focus efektleri */
+            .pagination li a:hover,
+            .pagination li a:focus {
+                background-color: #0d6efd;
+                color: #fff;
+                border-color: #0a58ca;
+                box-shadow:
+                    0 0 12px rgba(13, 110, 253, 0.7),
+                    inset 0 0 8px rgba(255, 255, 255, 0.3);
+                outline: none;
+                transform: scale(1.1);
+                z-index: 10;
+            }
+
+            /* Aktif sayfa */
+            .pagination li.active span {
+                background-color: #0d6efd;
+                color: #fff;
+                border-color: #0a58ca;
+                cursor: default;
+                box-shadow:
+                    0 0 14px rgba(13, 110, 253, 0.85),
+                    inset 0 0 10px rgba(255,255,255,0.4);
+                font-weight: 900;
+                transform: scale(1.15);
+                z-index: 20;
+            }
+
+            /* Devre dışı butonlar */
+            .pagination li.disabled span {
+                color: #adb5bd;
+                cursor: not-allowed;
+                background-color: #e9ecef;
+                border-color: #dee2e6;
+                box-shadow: none;
+                opacity: 0.6;
+                user-select: none;
+
+            }
+
+            /* Önceki ve Sonraki butonlara özel stil */
+            .pagination li:first-child a,
+            .pagination li:last-child a {
+                min-width: auto;               /* min-width kaldırıldı */
+                padding: 8px 14px;
+                border-radius: 24px;           /* Oval ve daha geniş */
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;                     /* Ok ile yazı arası boşluk */
+                background-color: #0d6efd;
+                color: #fff;
+                border-color: #0a58ca;
+                box-shadow:
+                    0 0 14px rgba(13, 110, 253, 0.85),
+                    inset 0 0 12px rgba(255,255,255,0.4);
+                transition:
+                    background-color 0.35s ease,
+                    color 0.35s ease,
+                    box-shadow 0.35s ease,
+                    transform 0.3s ease;
+                cursor: pointer;
+            }
+
+            .pagination li:first-child a:hover,
+            .pagination li:last-child a:hover {
+                background-color: #084298;
+                border-color: #042f6c;
+                box-shadow:
+                    0 0 20px rgba(8, 66, 152, 0.95),
+                    inset 0 0 15px rgba(255,255,255,0.6);
+                transform: scale(1.1);
+                z-index: 15;
+            }
+
+            /* Ok ikonları biraz daha net ve uyumlu */
+            .pagination li:first-child a::before,
+            .pagination li:last-child a::after {
+                display: inline-flex;
+                vertical-align: middle;
+                width: 18px;
+                height: 18px;
+                content: '';
+                background-size: contain;
+                background-repeat: no-repeat;
+                margin: 0;
+                filter: drop-shadow(0 0 1px rgba(0,0,0,0.15));
+            }
+
+            /* Önceki: sola ok */
+            .pagination li:first-child a::before {
+                background-image: url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>');
+            }
+
+            /* Sonraki: sağa ok */
+            .pagination li:last-child a::after {
+                background-image: url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>');
+            }
+
+            /* Sayfa numarası butonlarıyla farklı görünmeleri için */
+            .pagination li a:not(:first-child):not(:last-child),
+            .pagination li span:not(:first-child):not(:last-child) {
+                min-width: 44px;
+                height: 44px;
+                padding: 9px 12px;
+                border-radius: 50%;
+            }
+
+            /* Responsive: küçük ekranlarda iyileştirmeler */
+            @media (max-width: 768px) {
+                .pagination {
+                    gap: 0.6rem;
+                }
+                .pagination li a,
+                .pagination li span {
+                    min-width: 38px;
+                    height: 38px;
+                    padding: 8px 10px;
+                    font-size: 0.9rem;
+                }
+                .pagination li:first-child a,
+                .pagination li:last-child a {
+                    border-radius: 20px;
+                    padding: 7px 10px;
+                    gap: 6px;
+                }
+                .pagination li:first-child a::before,
+                .pagination li:last-child a::after {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .pagination {
+                    gap: 0.4rem;
+                }
+                .pagination li a,
+                .pagination li span {
+                    min-width: 32px;
+                    height: 32px;
+                    padding: 6px 8px;
+                    font-size: 0.85rem;
+                }
+                .pagination li:first-child a,
+                .pagination li:last-child a {
+                    border-radius: 18px;
+                    padding: 6px 8px;
+                    gap: 5px;
+                }
+                .pagination li:first-child a::before,
+                .pagination li:last-child a::after {
+                    width: 14px;
+                    height: 14px;
+                }
+            }
+
+            /* Dokunmatik cihazlarda dokunma alanı artırıldı */
+            .pagination li a,
+            .pagination li span {
+                touch-action: manipulation;
+            }
+
+
+
+
+
+
+
+
+
+            @keyframes bounce {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-8px);
+                }
+            }
+
+            .pagination li a:hover,
+            .pagination li a:focus {
+                animation: bounce 0.5s ease forwards;
+                color: #0d6efd;
+                border-color: #0d6efd;
+                background-color: #e7f1ff;
+            }
+
+            /* Aktif sayfa gölge ve renk */
+            .pagination li.active span {
+                background-color: #0d6efd;
+                color: white;
+                border-color: #0a58ca;
+                box-shadow: 0 0 12px rgba(13, 110, 253, 0.7);
+                font-weight: 800;
+            }
+
+
+
+
 
         </style>
     @endpush
@@ -567,5 +820,7 @@
             });
         </script>
     @endpush
-
+        <div style="margin-top: 15px;">
+            {{ $menus->links('pagination::bootstrap-5') }}
+        </div>
     @endsection

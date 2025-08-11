@@ -518,186 +518,232 @@
 
 
 
-    document.getElementById('reservationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
 
-        const form = e.target;
-        const formData = new FormData(form);
 
-        if (!formData.get('table_id') || !formData.get('date') || !formData.get('start_time') || !formData.get('end_time')) {
-            document.getElementById('reservationResult').innerHTML = '<p style="color:red;">Lütfen masa, tarih ve zamanı seçiniz.</p>';
-            return;
-        }
-
-        const date = formData.get('date');
-        const startTime = formData.get('start_time');
-        const endTime = formData.get('end_time');
-
-        const datetime = date + ' ' + startTime;
-        const end_datetime = date + ' ' + endTime;
-
-        const newFormData = new FormData();
-
-        for (const [key, value] of formData.entries()) {
-            if (!['date', 'start_time', 'end_time'].includes(key)) {
-                newFormData.append(key, value);
-            }
-        }
-
-        newFormData.append('datetime', datetime);
-        newFormData.append('end_datetime', end_datetime);
-
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': formData.get('_token'),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: newFormData
-        })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    document.getElementById('reservationResult').innerHTML = `<p style="color:green;">${data.message}</p>`;
-                    form.reset();
-                } else {
-                    document.getElementById('reservationResult').innerHTML = `<p style="color:red;">${data.message || 'Rezervasyon yapılamadı.'}</p>`;
+        document.addEventListener('DOMContentLoaded', function() {
+            // flatpickr instance (global-like)
+            const datetimeInput = document.getElementById('datetimepicker');
+            let fpInstance = flatpickr(datetimeInput, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                locale: "tr",
+                enable: [
+                    function(date) { return date.getDay() >= 0 && date.getDay() <= 6; }
+                ],
+                onReady: function(selectedDates, dateStr, instance) {
+                    updateTimeLimits(instance);
+                },
+                onClose: function(selectedDates, dateStr, instance) {
+                    updateTimeLimits(instance);
+                    if (dateStr) {
+                        fetchAvailableTables(dateStr);
+                    } else {
+                        clearTables();
+                    }
                 }
-            })
-            .catch(() => {
-                document.getElementById('reservationResult').innerHTML = '<p style="color:red;">Sunucu hatası oluştu.</p>';
             });
-    });
 
-
-
-
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-        flatpickr("#datetimepicker", {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            time_24hr: true,
-            locale: "tr",
-            enable: [
-                function(date) {
-                    return date.getDay() >= 0 && date.getDay() <= 6;
+            function updateTimeLimits(fpInstance) {
+                const selectedDate = fpInstance.selectedDates[0];
+                if (!selectedDate) {
+                    fpInstance.set('minTime', "09:00");
+                    fpInstance.set('maxTime', "21:00");
+                    return;
                 }
-            ],
-            onReady: function(selectedDates, dateStr, instance) {
-                updateTimeLimits(instance);
-            },
-            onClose: function(selectedDates, dateStr, instance) {  // ✅ kullanıcı seçim işini bitirdiğinde
-                updateTimeLimits(instance);
-                if (dateStr) {
-                    fetchAvailableTables(dateStr);
+                const day = selectedDate.getDay();
+                if (day === 0) { // Pazar
+                    fpInstance.set('minTime', "10:00");
+                    fpInstance.set('maxTime', "20:00");
                 } else {
-                    clearTables();
+                    fpInstance.set('minTime', "09:00");
+                    fpInstance.set('maxTime', "21:00");
                 }
             }
+
+            const tablesContainer = document.getElementById('tables-container');
+            let selectedTableId = null;
+
+            function fetchAvailableTables(datetime) {
+                const duration = 90;
+                console.log("fetchAvailableTables çağrıldı:", datetime);
+
+                fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Masalar geldi:", data);
+                        tablesContainer.innerHTML = '';
+                        selectedTableId = null;
+                        const selectedInput = document.getElementById('selected_table_id');
+                        if (selectedInput) selectedInput.value = '';
+
+                        if (data.error) {
+                            tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                            return;
+                        }
+
+                        if ((!data.available || data.available.length === 0) && (!data.booked || data.booked.length === 0)) {
+                            tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
+                            return;
+                        }
+
+                        // Boş masalar
+                        (data.available || []).forEach(table => {
+                            const div = document.createElement('div');
+                            div.className = 'table available';
+                            div.textContent = 'Masa ' + table.name;
+                            div.style.cursor = 'pointer';
+                            div.onclick = () => selectTable(table.id, div);
+                            tablesContainer.appendChild(div);
+                        });
+
+                        // Dolu masalar (kırmızı / seçilemez)
+                        (data.booked || []).forEach(table => {
+                            const div = document.createElement('div');
+                            div.className = 'table booked';
+                            div.textContent = 'Masa ' + table.name;
+                            div.style.opacity = '0.6';
+                            // booked masalara onclick koymuyoruz (seçilemez)
+                            tablesContainer.appendChild(div);
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
+                    });
+            }
+
+            function selectTable(id, element) {
+                if (element.classList.contains('booked')) return; // dolu masa seçilemez
+
+                const selectedInput = document.getElementById('selected_table_id');
+
+                if (selectedTableId === id) {
+                    selectedTableId = null;
+                    element.classList.remove('selected');
+                    if (selectedInput) selectedInput.value = '';
+                } else {
+                    selectedTableId = id;
+                    document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
+                    element.classList.add('selected');
+                    if (selectedInput) selectedInput.value = id;
+                }
+            }
+
+            function clearTables() {
+                tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
+                selectedTableId = null;
+                const selectedInput = document.getElementById('selected_table_id');
+                if (selectedInput) selectedInput.value = '';
+            }
+
+            // Form submit handler
+            const reservationForm = document.getElementById('reservationForm');
+            reservationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+
+                // ÖNEMLİ: datetime değerini reset'ten önce al
+                const datetimeValue = (fpInstance && fpInstance.input && fpInstance.input.value) ? fpInstance.input.value.trim() : (document.getElementById('datetimepicker').value || '').trim();
+                console.log('Gönderilen datetime:', datetimeValue);
+
+                // Zorunlu alan kontrolü
+                if (!formData.get('table_id') || !formData.get('datetime')) {
+                    document.getElementById('reservationResult').innerHTML =
+                        '<p style="color:red;">Lütfen masa ve tarih/saat seçiniz.</p>';
+                    return;
+                }
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': formData.get('_token'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+
+
+
+
+
+
+
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Başarılı!',
+                                text: data.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+
+                            form.reset();
+                            document.getElementById('selected_table_id').value = '';
+                            clearTables();
+
+
+                            // Tarih ve saati al, sonra masaları yeniden yükle
+                            const datetime = document.getElementById('datetimepicker').value;
+                            if(datetime) {
+                                fetchAvailableTables(datetime);
+                            } else {
+                                console.log("clearTables çağrılıyor");
+                                clearTables();
+                            }
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hata!',
+                                text: data.message || 'Rezervasyon yapılamadı.',
+                                showConfirmButton: true
+                            });
+                        }
+                    })
+
+                    .catch(() => {
+                        document.getElementById('reservationResult').innerHTML =
+                            '<p style="color:red;">Sunucu hatası oluştu.</p>';
+                    });
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // Sayfa açılışında temiz göster
+            clearTables();
+
+
+
+
         });
 
-        function updateTimeLimits(fpInstance) {
-            const selectedDate = fpInstance.selectedDates[0];
-            if (!selectedDate) {
-                fpInstance.set('minTime', "09:00");
-                fpInstance.set('maxTime', "21:00");
-                return;
-            }
-            const day = selectedDate.getDay();
 
-            if (day === 0) { // Pazar
-                fpInstance.set('minTime', "10:00");
-                fpInstance.set('maxTime', "20:00");
-            } else { // Pazartesi-Cumartesi
-                fpInstance.set('minTime', "09:00");
-                fpInstance.set('maxTime', "21:00");
-            }
-        }
-
-        const tablesContainer = document.getElementById('tables-container');
-        let selectedTableId = null;
-
-        function fetchAvailableTables(datetime) {
-            const duration = 90; // dakika
-
-            fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
-                .then(res => res.json())
-                .then(data => {
-                    tablesContainer.innerHTML = '';
-                    selectedTableId = null;
-                    document.getElementById('selected_table_id').value = '';
-
-                    if (data.error) {
-                        tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
-                        return;
-                    }
-
-                    if (data.available.length === 0 && data.booked.length === 0) {
-                        tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
-                        return;
-                    }
-
-                    // Boş masalar
-                    data.available.forEach(table => {
-                        const div = document.createElement('div');
-                        div.className = 'table available';
-                        div.textContent = 'Masa ' + table.name;
-                        div.style.cursor = 'pointer';
-                        div.onclick = () => selectTable(table.id, div);
-                        tablesContainer.appendChild(div);
-                    });
-
-                    // Dolu masalar (kırmızı ve seçilemez)
-                    data.booked.forEach(table => {
-                        const div = document.createElement('div');
-                        div.className = 'table booked';
-                        div.textContent = 'Masa ' + table.name;
-                        div.style.opacity = '0.6';
-                        tablesContainer.appendChild(div);
-                    });
-                })
-                .catch(() => {
-                    tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
-                });
-        }
-
-        function selectTable(id, element) {
-            if (element.classList.contains('booked')) return;  // dolu masa seçilemez
-
-            if (selectedTableId === id) {
-                selectedTableId = null;
-                element.classList.remove('selected');
-                document.getElementById('selected_table_id').value = '';
-            } else {
-                selectedTableId = id;
-                document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
-                element.classList.add('selected');
-                document.getElementById('selected_table_id').value = id;
-            }
-        }
-
-
-        function clearTables() {
-            tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
-            selectedTableId = null;
-            document.getElementById('selected_table_id').value = '';
-        }
-
-
-
-
-    });
 </script>
+
 
 
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/custom.js') }}"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </body>
