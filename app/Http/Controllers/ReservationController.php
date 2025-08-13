@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationStatusMail;
 use App\Models\Menu;
+use App\Models\Order;
+
 
 class ReservationController extends Controller
 {
@@ -93,6 +95,7 @@ class ReservationController extends Controller
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
             'duration' => 'nullable|integer|min:15|max:240',
+            'is_preorder' => 'nullable|boolean'
         ]);
 
         $start = Carbon::createFromFormat('Y-m-d H:i', $request->datetime);
@@ -129,7 +132,7 @@ class ReservationController extends Controller
         }
 
         try {
-            Reservation::create([
+            $reservation = Reservation::create([
                 'table_id' => $request->table_id,
                 'name' => $request->name,
                 'surname' => $request->surname,
@@ -139,11 +142,22 @@ class ReservationController extends Controller
                 'people' => $request->people,
                 'message' => $request->message,
                 'status' => 'reserved',
+                'is_preorder' => $request->has('is_preorder'),
+                'total_price' => 0,
+                'payment_status' => 'unpaid',
             ]);
 
-            // Eğer ajax isteği ise JSON dön
+// Eğer ön sipariş seçilmişse, preorder sayfasına yönlendir
             if ($request->ajax()) {
-                return response()->json(['success' => true, 'message' => 'Rezervasyon başarıyla gönderildiii.']);
+                $response = ['success' => true, 'message' => 'Rezervasyon başarıyla gönderildi.'];
+
+                // Eğer ön sipariş seçilmişse, JS’e yönlendirme URL’si gönder
+                if($reservation->is_preorder){
+
+                    $response['preorder_url'] = route('reservation.preorder', $reservation->id);
+                }
+
+                return response()->json($response);
             }
 
             // Değilse redirect
@@ -265,4 +279,79 @@ class ReservationController extends Controller
 
         return view('reservation.form', compact('menus'));
     }
+
+
+
+    public function preorder($reservation_id)
+    {
+        $reservation = Reservation::findOrFail($reservation_id);
+        $menus = Menu::where('active', true)->get();
+        $cart = session('cart_'.$reservation_id, []);
+
+        return view('reservation.preorder', compact('reservation', 'menus', 'cart'));
+    }
+
+    public function addToCart(Request $request, $id)
+    {
+        $cart = session('cart_'.$id, []);
+
+        $menuId = $request->menu_id;
+        $quantity = $request->quantity;
+
+        $menu = Menu::find($menuId);
+        if(!$menu) return response()->json(['success' => false]);
+
+        $cart[$menuId] = [
+            'menu_id' => $menu->id,
+            'name' => $menu->name,
+            'quantity' => $quantity,
+            'price' => $menu->price,
+            'total_price' => $menu->price * $quantity
+        ];
+
+        session(['cart_'.$id => $cart]);
+
+        return response()->json(['success' => true, 'cart' => $cart]);
+    }
+
+    public function finalizePreorder($reservation_id)
+    {
+        $reservation = Reservation::findOrFail($reservation_id);
+        $cart = session('cart_'.$reservation_id, []);
+        $totalPrice = 0;
+
+        foreach($cart as $item){
+            Order::create([
+                'reservation_id' => $reservation->id,
+                'menu_id' => $item['menu_id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price'],
+                'total_price' => $item['total_price'],
+                'order_status' => 'pending',
+            ]);
+
+            $totalPrice += $item['total_price'];
+        }
+
+        $reservation->update(['total_price' => $totalPrice]);
+        session()->forget('cart_'.$reservation_id);
+
+        return redirect()->route('reservation.checkout', $reservation_id);
+    }
+
+    public function checkout($reservation_id)
+    {
+        $reservation = Reservation::findOrFail($reservation_id);
+        return view('reservation.checkout', compact('reservation'));
+    }
+
+
+
+
+
+
+
+
+
+
 }

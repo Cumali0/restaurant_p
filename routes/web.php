@@ -24,7 +24,6 @@ Route::post('/dashboard/reservations', [ReservationController::class, 'store'])-
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard/reservations', [ReservationController::class, 'index'])->name('reservations.index');
-
     Route::delete('/dashboard/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
     Route::post('/dashboard/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
     Route::post('/dashboard/reservations/{id}/reject', [ReservationController::class, 'reject'])->name('reservations.reject');
@@ -104,3 +103,19 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
 
 Route::get('/', [MenuController::class, 'index'])->name('home');
+
+
+
+// Ön sipariş sayfası
+Route::get('/reservation/{reservation}/preorder', [ReservationController::class, 'preorder'])->name('reservation.preorder');
+
+// Sepete ekleme
+Route::post('/reservation/{reservation}/add-to-cart', [ReservationController::class, 'addToCart'])->name('reservation.addToCart');
+
+// Preorder finalize
+Route::post('/reservation/{reservation}/finalize-preorder', [ReservationController::class, 'finalizePreorder'])->name('reservation.finalizePreorder');
+
+// Checkout sayfası (ön sipariş sonrası)
+Route::get('/reservation/{reservation}/checkout', [ReservationController::class, 'checkout'])->name('reservation.checkout');
+
+

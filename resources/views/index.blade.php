@@ -315,6 +315,8 @@
                             </div>
                         </div>
 
+
+
                         <!-- Masalar Dinamik Listesi -->
                         <div class="col-12" id="tables-container" style="margin-top: 15px; display: flex;">
                             <p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>
@@ -330,6 +332,15 @@
                                 <label for="message">Özel İstek</label>
                             </div>
                         </div>
+                        <div class="col-12 mt-3">
+                            <div class="form-check">
+                                <input type="checkbox"  name="is_preorder" value="1" class="form-check-input" id="is_preorder">
+
+                                <label class="form-check-label text-white" for="is_preorder">Ön sipariş vermek istiyorum</label>
+
+                            </div>
+                        </div>
+
                         <!-- Gönder -->
                         <div class="col-12">
                             <button class="btn btn-primary w-100 py-3" type="submit">Şimdi Rezervasyon Yap</button>
@@ -356,6 +367,41 @@
 
 <!--Reservation Section End-->
 
+
+<!-- Preorder Menu Section -->
+
+<!-----
+<div id="preorder-section" class="container pt-5" style="display: none;">
+    <h3>Ön Sipariş Menüsü</h3>
+    <div class="row" id="menu-cards">
+        @foreach($menus as $menu)
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100">
+                    <img src="{{ asset('storage/menu_images/' . basename($menu->image)) }}"
+                         class="card-img-top"
+                         alt="{{ $menu->name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $menu->name }}</h5>
+                        <p class="card-text">{{ number_format($menu->price, 2) }}₺</p>
+                        <input type="number" min="1" value="1" class="form-control mb-2 menu-quantity" data-menu-id="{{ $menu->id }}">
+                        <button class="btn btn-primary add-to-cart" data-menu-id="{{ $menu->id }}">Sepete Ekle</button>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+
+
+    <div id="cart-section" class="mt-4">
+        <h4>Sepetiniz</h4>
+        <ul id="cart-items" class="list-group mb-2"></ul>
+        <p>Toplam: <span id="cart-total">0</span>₺</p>
+        <button id="finalize-cart" class="btn btn-success">Siparişi Tamamla</button>
+    </div>
+</div>          ---->
+
+<!-- Preorder Menu End Section -->
 <!--Team Section Start-->
 
 <div class="container pt-5 pb-3">
@@ -670,8 +716,7 @@
 
 
 
-
-                    .then(res => res.json())
+                    .then(res => res.json()) // <-- ekle
                     .then(data => {
                         if (data.success) {
                             Swal.fire({
@@ -680,23 +725,16 @@
                                 text: data.message,
                                 showConfirmButton: false,
                                 timer: 2000
+                            }).then(() => {
+                                // Eğer preorder URL var ise yönlendir
+                                if(data.preorder_url){
+                                    window.location.href = data.preorder_url;
+                                } else {
+                                    form.reset();
+                                    document.getElementById('selected_table_id').value = '';
+                                    clearTables();
+                                }
                             });
-
-
-                            form.reset();
-                            document.getElementById('selected_table_id').value = '';
-                            clearTables();
-
-
-                            // Tarih ve saati al, sonra masaları yeniden yükle
-                            const datetime = document.getElementById('datetimepicker').value;
-                            if(datetime) {
-                                fetchAvailableTables(datetime);
-                            } else {
-                                console.log("clearTables çağrılıyor");
-                                clearTables();
-                            }
-
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -706,6 +744,7 @@
                             });
                         }
                     })
+
 
                     .catch(() => {
                         document.getElementById('reservationResult').innerHTML =
@@ -732,6 +771,83 @@
 
 
         });
+
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('is_preorder').addEventListener('change', function() {
+                if (this.checked) {
+                    const reservationId = document.getElementById('reservation_id').value;
+                    if(reservationId){
+                        window.location.href = `/reservation/${reservationId}/preorder`;
+                    } else {
+                        alert("Rezervasyon henüz oluşturulmadı.");
+                        this.checked = false;
+                    }
+                }
+            });
+
+            const cart = [];
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const menuId = this.dataset.menuId;
+                    const quantityInput = document.querySelector(`.menu-quantity[data-menu-id="${menuId}"]`);
+                    const quantity = parseInt(quantityInput.value);
+
+                    fetch(`/reservation/{{ $reservation->id ?? 0 }}/add-to-cart`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ menu_id: menuId, quantity: quantity })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
+                                updateCartDisplay(data.cart);
+                            }
+                        });
+                });
+            });
+
+            function updateCartDisplay(cartData) {
+                cartItems.innerHTML = '';
+                let total = 0;
+                cartData.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = `${item.name} x${item.quantity} - ${item.total_price}₺`;
+                    cartItems.appendChild(li);
+                    total += item.total_price;
+                });
+                cartTotal.textContent = total.toFixed(2);
+            }
+
+            // Siparişi finalize et
+            const finalizeBtn = document.getElementById('finalize-cart');
+            finalizeBtn.addEventListener('click', function() {
+                fetch(`/reservation/{{ $reservation->id ?? 0 }}/finalize-preorder`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                }).then(res => {
+                    window.location.href = `/reservation/{{ $reservation->id ?? 0 }}/checkout`;
+                });
+            });
+
+        });
+
+
+
 
 
 </script>

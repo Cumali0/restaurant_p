@@ -820,7 +820,10 @@
             });
         </script>
     @endpush
-        <div style="margin-top: 15px;">
-            {{ $menus->links('pagination::bootstrap-5') }}
-        </div>
+        @if($mode === 'index' && $menus)
+            <div style="margin-top: 15px;">
+                {{ $menus->links('pagination::bootstrap-5') }}
+            </div>
+        @endif
+
     @endsection

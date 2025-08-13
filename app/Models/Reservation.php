@@ -36,6 +36,13 @@ class Reservation extends Model
     public const STATUS_RESERVED = 'reserved';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';
+
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
 }
 
 
