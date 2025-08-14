@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Website</title>
@@ -271,8 +273,9 @@
                     Rezervasyon
                 </h5>
                 <h1 class="text-white mb-4">Online Masa Kaydı</h1>
-                <form id="reservationForm" action="{{ route('reservations.store') }}" method="POST">
-                    @csrf
+                <form id="reservationForm" action="{{ route('reservations.store.public') }}" method="POST">
+
+                @csrf
                     <div class="row g-3">
                         <!-- Ad -->
                         <div class="col-md-6">
@@ -561,297 +564,258 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
 
 <script>
-
-
-
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // flatpickr instance (global-like)
-            const datetimeInput = document.getElementById('datetimepicker');
-            let fpInstance = flatpickr(datetimeInput, {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                time_24hr: true,
-                locale: "tr",
-                enable: [
-                    function(date) { return date.getDay() >= 0 && date.getDay() <= 6; }
-                ],
-                onReady: function(selectedDates, dateStr, instance) {
-                    updateTimeLimits(instance);
-                },
-                onClose: function(selectedDates, dateStr, instance) {
-                    updateTimeLimits(instance);
-                    if (dateStr) {
-                        fetchAvailableTables(dateStr);
-                    } else {
-                        clearTables();
-                    }
-                }
-            });
-
-            function updateTimeLimits(fpInstance) {
-                const selectedDate = fpInstance.selectedDates[0];
-                if (!selectedDate) {
-                    fpInstance.set('minTime', "09:00");
-                    fpInstance.set('maxTime', "21:00");
-                    return;
-                }
-                const day = selectedDate.getDay();
-                if (day === 0) { // Pazar
-                    fpInstance.set('minTime', "10:00");
-                    fpInstance.set('maxTime', "20:00");
-                } else {
-                    fpInstance.set('minTime', "09:00");
-                    fpInstance.set('maxTime', "21:00");
-                }
+    document.addEventListener('DOMContentLoaded', function() {
+        // -----------------------------
+        // Datetimepicker (flatpickr)
+        // -----------------------------
+        const datetimeInput = document.getElementById('datetimepicker');
+        let fpInstance = flatpickr(datetimeInput, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            locale: "tr",
+            enable: [
+                function(date) { return date.getDay() >= 0 && date.getDay() <= 6; }
+            ],
+            onReady: function(selectedDates, dateStr, instance) {
+                updateTimeLimits(instance);
+            },
+            onClose: function(selectedDates, dateStr, instance) {
+                updateTimeLimits(instance);
+                if (dateStr) fetchAvailableTables(dateStr);
+                else clearTables();
             }
-
-            const tablesContainer = document.getElementById('tables-container');
-            let selectedTableId = null;
-
-            function fetchAvailableTables(datetime) {
-                const duration = 90;
-                console.log("fetchAvailableTables çağrıldı:", datetime);
-
-                fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log("Masalar geldi:", data);
-                        tablesContainer.innerHTML = '';
-                        selectedTableId = null;
-                        const selectedInput = document.getElementById('selected_table_id');
-                        if (selectedInput) selectedInput.value = '';
-
-                        if (data.error) {
-                            tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
-                            return;
-                        }
-
-                        if ((!data.available || data.available.length === 0) && (!data.booked || data.booked.length === 0)) {
-                            tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
-                            return;
-                        }
-
-                        // Boş masalar
-                        (data.available || []).forEach(table => {
-                            const div = document.createElement('div');
-                            div.className = 'table available';
-                            div.textContent = 'Masa ' + table.name;
-                            div.style.cursor = 'pointer';
-                            div.onclick = () => selectTable(table.id, div);
-                            tablesContainer.appendChild(div);
-                        });
-
-                        // Dolu masalar (kırmızı / seçilemez)
-                        (data.booked || []).forEach(table => {
-                            const div = document.createElement('div');
-                            div.className = 'table booked';
-                            div.textContent = 'Masa ' + table.name;
-                            div.style.opacity = '0.6';
-                            // booked masalara onclick koymuyoruz (seçilemez)
-                            tablesContainer.appendChild(div);
-                        });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
-                    });
-            }
-
-            function selectTable(id, element) {
-                if (element.classList.contains('booked')) return; // dolu masa seçilemez
-
-                const selectedInput = document.getElementById('selected_table_id');
-
-                if (selectedTableId === id) {
-                    selectedTableId = null;
-                    element.classList.remove('selected');
-                    if (selectedInput) selectedInput.value = '';
-                } else {
-                    selectedTableId = id;
-                    document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
-                    element.classList.add('selected');
-                    if (selectedInput) selectedInput.value = id;
-                }
-            }
-
-            function clearTables() {
-                tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
-                selectedTableId = null;
-                const selectedInput = document.getElementById('selected_table_id');
-                if (selectedInput) selectedInput.value = '';
-            }
-
-            // Form submit handler
-            const reservationForm = document.getElementById('reservationForm');
-            reservationForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData(form);
-
-                // ÖNEMLİ: datetime değerini reset'ten önce al
-                const datetimeValue = (fpInstance && fpInstance.input && fpInstance.input.value) ? fpInstance.input.value.trim() : (document.getElementById('datetimepicker').value || '').trim();
-                console.log('Gönderilen datetime:', datetimeValue);
-
-                // Zorunlu alan kontrolü
-                if (!formData.get('table_id') || !formData.get('datetime')) {
-                    document.getElementById('reservationResult').innerHTML =
-                        '<p style="color:red;">Lütfen masa ve tarih/saat seçiniz.</p>';
-                    return;
-                }
-
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: formData
-                })
-
-
-
-
-
-
-                    .then(res => res.json()) // <-- ekle
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Başarılı!',
-                                text: data.message,
-                                showConfirmButton: false,
-                                timer: 2000
-                            }).then(() => {
-                                // Eğer preorder URL var ise yönlendir
-                                if(data.preorder_url){
-                                    window.location.href = data.preorder_url;
-                                } else {
-                                    form.reset();
-                                    document.getElementById('selected_table_id').value = '';
-                                    clearTables();
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Hata!',
-                                text: data.message || 'Rezervasyon yapılamadı.',
-                                showConfirmButton: true
-                            });
-                        }
-                    })
-
-
-                    .catch(() => {
-                        document.getElementById('reservationResult').innerHTML =
-                            '<p style="color:red;">Sunucu hatası oluştu.</p>';
-                    });
-            });
-
-
-
-
-
-
-
-
-
-
-
-
-
-            // Sayfa açılışında temiz göster
-            clearTables();
-
-
-
-
         });
 
+        function updateTimeLimits(fpInstance) {
+            const selectedDate = fpInstance.selectedDates[0];
+            if (!selectedDate) {
+                fpInstance.set('minTime', "09:00");
+                fpInstance.set('maxTime', "21:00");
+                return;
+            }
+            const day = selectedDate.getDay();
+            if (day === 0) { // Pazar
+                fpInstance.set('minTime', "10:00");
+                fpInstance.set('maxTime', "20:00");
+            } else {
+                fpInstance.set('minTime', "09:00");
+                fpInstance.set('maxTime', "21:00");
+            }
+        }
 
+        // -----------------------------
+        // Masalar
+        // -----------------------------
+        const tablesContainer = document.getElementById('tables-container');
+        let selectedTableId = null;
 
+        function fetchAvailableTables(datetime) {
+            const duration = 90;
+            fetch(`/tables-availability?datetime=${encodeURIComponent(datetime)}&duration=${duration}`)
+                .then(res => res.json())
+                .then(data => {
+                    tablesContainer.innerHTML = '';
+                    selectedTableId = null;
+                    const selectedInput = document.getElementById('selected_table_id');
+                    if (selectedInput) selectedInput.value = '';
 
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('is_preorder').addEventListener('change', function() {
-                if (this.checked) {
-                    const reservationId = document.getElementById('reservation_id').value;
-                    if(reservationId){
-                        window.location.href = `/reservation/${reservationId}/preorder`;
-                    } else {
-                        alert("Rezervasyon henüz oluşturulmadı.");
-                        this.checked = false;
+                    if (data.error) {
+                        tablesContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                        return;
                     }
-                }
-            });
 
-            const cart = [];
-            const cartItems = document.getElementById('cart-items');
-            const cartTotal = document.getElementById('cart-total');
+                    if ((!data.available || data.available.length === 0) && (!data.booked || data.booked.length === 0)) {
+                        tablesContainer.innerHTML = `<p class="text-white">Bu tarihte hiç masa bulunmamaktadır.</p>`;
+                        return;
+                    }
 
-            document.querySelectorAll('.add-to-cart').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const menuId = this.dataset.menuId;
-                    const quantityInput = document.querySelector(`.menu-quantity[data-menu-id="${menuId}"]`);
-                    const quantity = parseInt(quantityInput.value);
+                    (data.available || []).forEach(table => {
+                        const div = document.createElement('div');
+                        div.className = 'table available';
+                        div.textContent = 'Masa ' + table.name;
+                        div.style.cursor = 'pointer';
+                        div.onclick = () => selectTable(table.id, div);
+                        tablesContainer.appendChild(div);
+                    });
 
-                    fetch(`/reservation/{{ $reservation->id ?? 0 }}/add-to-cart`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ menu_id: menuId, quantity: quantity })
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if(data.success) {
-                                updateCartDisplay(data.cart);
-                            }
-                        });
+                    (data.booked || []).forEach(table => {
+                        const div = document.createElement('div');
+                        div.className = 'table booked';
+                        div.textContent = 'Masa ' + table.name;
+                        div.style.opacity = '0.6';
+                        tablesContainer.appendChild(div);
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    tablesContainer.innerHTML = '<p class="text-danger">Masalar yüklenemedi, lütfen tekrar deneyin.</p>';
                 });
-            });
+        }
 
-            function updateCartDisplay(cartData) {
-                cartItems.innerHTML = '';
-                let total = 0;
-                cartData.forEach(item => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item';
-                    li.textContent = `${item.name} x${item.quantity} - ${item.total_price}₺`;
-                    cartItems.appendChild(li);
-                    total += item.total_price;
-                });
-                cartTotal.textContent = total.toFixed(2);
+        function selectTable(id, element) {
+            if (element.classList.contains('booked')) return;
+
+            const selectedInput = document.getElementById('selected_table_id');
+
+            if (selectedTableId === id) {
+                selectedTableId = null;
+                element.classList.remove('selected');
+                if (selectedInput) selectedInput.value = '';
+            } else {
+                selectedTableId = id;
+                document.querySelectorAll('.table.selected').forEach(el => el.classList.remove('selected'));
+                element.classList.add('selected');
+                if (selectedInput) selectedInput.value = id;
+            }
+        }
+
+        function clearTables() {
+            tablesContainer.innerHTML = '<p class="text-white">Lütfen önce tarih ve saati seçiniz.</p>';
+            selectedTableId = null;
+            const selectedInput = document.getElementById('selected_table_id');
+            if (selectedInput) selectedInput.value = '';
+        }
+
+        clearTables(); // sayfa açılışında
+
+        // -----------------------------
+        // Form submit (tek listener)
+        // -----------------------------
+        const reservationForm = document.getElementById('reservationForm');
+        const preorderCheckbox = document.getElementById('is_preorder');
+        const reservationInput = document.getElementById('reservation_id');
+
+        reservationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(reservationForm);
+
+            // Tarih ve masa kontrolü
+            const datetimeValue = (fpInstance && fpInstance.input && fpInstance.input.value)
+                ? fpInstance.input.value.trim()
+                : (document.getElementById('datetimepicker').value || '').trim();
+
+            if (!selectedTableId || !datetimeValue) {
+                document.getElementById('reservationResult').innerHTML =
+                    '<p style="color:red;">Lütfen masa ve tarih/saat seçiniz.</p>';
+                return;
             }
 
-            // Siparişi finalize et
-            const finalizeBtn = document.getElementById('finalize-cart');
-            finalizeBtn.addEventListener('click', function() {
-                fetch(`/reservation/{{ $reservation->id ?? 0 }}/finalize-preorder`, {
+            // FormData table_id ve datetime değerlerini güncelle
+            formData.set('table_id', selectedTableId);
+            formData.set('datetime', datetimeValue);
+
+            fetch(reservationForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': formData.get('_token') || document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hidden input güncelle
+                        if (reservationInput) {
+                            reservationInput.value = data.preorder_url
+                                ? data.preorder_url.split('/').pop()
+                                : '';
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Başarılı!',
+                            text: data.message,
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            if (preorderCheckbox.checked && data.preorder_url) {
+                                window.location.href = data.preorder_url;
+                            } else {
+                                reservationForm.reset();
+                                clearTables();
+                                if (reservationInput) reservationInput.value = '';
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hata!',
+                            text: data.message || 'Rezervasyon yapılamadı.',
+                            showConfirmButton: true
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('AJAX hatası:', err);
+                    document.getElementById('reservationResult').innerHTML =
+                        '<p style="color:red;">Sunucu hatası oluştu. Muhtemelen CSRF veya yönlendirme problemi var.</p>';
+                });
+        });
+
+        // -----------------------------
+        // Cart / Ön sipariş işlemleri
+        // -----------------------------
+        const cartItems = document.getElementById('cart-items');
+        const cartTotal = document.getElementById('cart-total');
+
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const menuId = this.dataset.menuId;
+                const quantityInput = document.querySelector(`.menu-quantity[data-menu-id="${menuId}"]`);
+                const quantity = parseInt(quantityInput.value);
+
+                fetch(`/reservation/{{ $reservation->id ?? 0 }}/add-to-cart`, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                }).then(res => {
-                    window.location.href = `/reservation/{{ $reservation->id ?? 0 }}/checkout`;
-                });
+                    body: JSON.stringify({ menu_id: menuId, quantity: quantity })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.success) updateCartDisplay(data.cart);
+                        if(data.preorder_url) window.location.href = data.preorder_url;
+                    });
             });
-
         });
 
+        function updateCartDisplay(cartData) {
+            cartItems.innerHTML = '';
+            let total = 0;
+            cartData.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.textContent = `${item.name} x${item.quantity} - ${item.total_price}₺`;
+                cartItems.appendChild(li);
+                total += item.total_price;
+            });
+            cartTotal.textContent = total.toFixed(2);
+        }
 
+        const finalizeBtn = document.getElementById('finalize-cart');
+        if (finalizeBtn) {
+            finalizeBtn.addEventListener('click', function() {
+                fetch(`/reservation/0/finalize-preorder`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': 'Z47WcPRjV6PdFPZZGegSFBGpZa9JF6JmdRxqOHGK',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        window.location.href = `/reservation/0/checkout`;
+                    })
+                    .catch(err => console.error(err));
+            });
+        }
 
-
-
+    });
 </script>
-
 
 
 

@@ -15,6 +15,46 @@ use App\Models\Order;
 
 class ReservationController extends Controller
 {
+    public function storePublic(Request $request)
+    {
+        $request->validate([
+            'table_id' => 'required|exists:tables,id',
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'datetime' => 'required|date_format:Y-m-d H:i',
+            'people' => 'required|integer|min:1',
+            'message' => 'nullable|string',
+            'duration' => 'nullable|integer|min:15|max:240',
+            'is_preorder' => 'nullable|boolean'
+        ]);
+
+        $start = $request->datetime;
+        $end = \Carbon\Carbon::parse($start)->addMinutes($request->duration ?? 90);
+
+        $reservation = Reservation::create([
+            'table_id' => $request->table_id,
+            'name' => $request->name,
+            'surname' => $request->surname,
+            'email' => $request->email,
+            'datetime' => $start,
+            'end_datetime' => $end,
+            'people' => $request->people,
+            'message' => $request->message,
+            'status' => 'reserved',
+            'is_preorder' => $request->has('is_preorder'),
+            'total_price' => 0,
+            'payment_status' => 'unpaid',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rezervasyon başarıyla oluşturuldu.',
+            'preorder_url' => route('reservation.preorder', $reservation->id)
+        ]);
+    }
+
+
 
     public function reject($id)
     {

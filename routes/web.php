@@ -104,18 +104,19 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
 Route::get('/', [MenuController::class, 'index'])->name('home');
 
-
+Route::post('/reservation/public', [ReservationController::class, 'storePublic'])
+    ->name('reservations.store.public');
 
 // Ön sipariş sayfası
-Route::get('/reservation/{reservation}/preorder', [ReservationController::class, 'preorder'])->name('reservation.preorder');
+Route::get('/reservation/{id}/preorder', [ReservationController::class, 'preorder'])->name('reservation.preorder');
 
 // Sepete ekleme
-Route::post('/reservation/{reservation}/add-to-cart', [ReservationController::class, 'addToCart'])->name('reservation.addToCart');
+//Route::post('/reservation/{reservation}/add-to-cart', [ReservationController::class, 'addToCart'])->name('reservation.addToCart');
 
 // Preorder finalize
-Route::post('/reservation/{reservation}/finalize-preorder', [ReservationController::class, 'finalizePreorder'])->name('reservation.finalizePreorder');
+//Route::post('/reservation/{reservation}/finalize-preorder', [ReservationController::class, 'finalizePreorder'])->name('reservation.finalizePreorder');
 
 // Checkout sayfası (ön sipariş sonrası)
-Route::get('/reservation/{reservation}/checkout', [ReservationController::class, 'checkout'])->name('reservation.checkout');
+//Route::get('/reservation/{reservation}/checkout', [ReservationController::class, 'checkout'])->name('reservation.checkout');
 
 
