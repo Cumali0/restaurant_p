@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Table;
@@ -354,30 +355,44 @@ class ReservationController extends Controller
         return response()->json(['success' => true, 'cart' => $cart]);
     }
 
-    public function finalizePreorder($reservation_id)
+    public function finalizePreorder(Request $request, Reservation $reservation)
     {
-        $reservation = Reservation::findOrFail($reservation_id);
-        $cart = session('cart_'.$reservation_id, []);
-        $totalPrice = 0;
+        $cart = $request->cart;
 
-        foreach($cart as $item){
-            Order::create([
-                'reservation_id' => $reservation->id,
-                'menu_id' => $item['menu_id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'total_price' => $item['total_price'],
-                'order_status' => 'pending',
-            ]);
-
-            $totalPrice += $item['total_price'];
+        if (empty($cart)) {
+            return response()->json(['message' => 'Sepet boş!'], 400);
         }
 
-        $reservation->update(['total_price' => $totalPrice]);
-        session()->forget('cart_'.$reservation_id);
+        // Toplam fiyatı hesapla
+        $totalPrice = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
-        return redirect()->route('reservation.checkout', $reservation_id);
+        // Order oluştur
+        $order = $reservation->orders()->create([
+            'total_price' => $totalPrice,
+        ]);
+
+        // Order items oluştur
+        foreach($cart as $item){
+            $order->orderItems()->create([
+                'menu_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price'],
+                'total_price' => $item['price'] * $item['quantity'],
+            ]);
+        }
+
+        // Ödeme sayfasına yönlendirme için JSON ile order ID dönebiliriz
+        return response()->json([
+            'message' => 'Ön sipariş başarıyla kaydedildi.',
+            'redirect_url' => route('payment.page', ['order' => $order->id])
+        ]);
     }
+
+
+
+
+
+
 
     public function checkout($reservation_id)
     {

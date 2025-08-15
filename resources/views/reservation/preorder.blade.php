@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ön Sipariş - Rezervasyon</title>
@@ -302,7 +304,7 @@
 <body>
 
 <h2>Ön Sipariş - Rezervasyon <span id="reservation-id"></span></h2>
-<input type="hidden" id="reservation_id" value="123">
+<input  type="hidden" id="reservation_id" value="{{ $reservation->id }}">
 
 <div id="filter-container" class="category-bar"></div>
 
@@ -316,7 +318,7 @@
         <p>Toplam: <span id="cart-total">0</span>₺</p>
 
         <div style="text-align:center; margin-bottom:10px;">
-            <label><input type="radio" name="payment" value="nakit" checked> Nakit</label>
+            <label><input type="radio" name="payment" value="Banka" checked> Banka Kartı</label>
             <label><input type="radio" name="payment" value="kredi"> Kredi Kartı</label>
         </div>
 
@@ -419,7 +421,7 @@
 
                     setTimeout(()=>{
                         document.body.removeChild(clone);
-                        const existing = cart.find(i=>i.id==menuId);
+                        const existing = cart.find(i=>i.id===menuId);
                         if(existing) existing.quantity += quantity;
                         else cart.push({id:menuId,name:name,price:price,quantity:quantity});
                         updateCartDisplay();
@@ -521,20 +523,33 @@
             modal.style.display='flex';
         });
 
-        confirmOrder.addEventListener('click',()=>{
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        confirmOrder.addEventListener('click', e => {
+            e.preventDefault();
             const payment = document.querySelector('input[name="payment"]:checked').value;
-            fetch(`/reservation/${reservationId}/finalize-preorder`,{
-                method:'POST',
-                headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
-                body:JSON.stringify({cart:cart,payment:payment})
+
+            fetch(`/reservation/${reservationId}/finalize-preorder`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type':'application/json' },
+                body: JSON.stringify({ cart: cart, payment: payment })
             })
-                .then(res=>res.json())
-                .then(data=>{
-                    if(data.success){ alert('Siparişiniz tamamlandı!'); cart.length=0; updateCartDisplay(); modal.style.display='none'; }
-                    else alert('Sipariş gönderilemedi.');
+                .then(res => res.json())
+                .then(data => {
+                    if(data.redirect_url){
+                        window.location.href = data.redirect_url; // Ödeme sayfasına yönlendir
+                    } else {
+                        alert(data.message);
+                        cart.length = 0;
+                        updateCartDisplay();
+                        modal.style.display = 'none';
+                    }
                 })
-                .catch(err=>console.error(err));
+                .catch(err => console.error(err));
         });
+
+
 
         cancelOrder.addEventListener('click',()=>{ modal.style.display='none'; });
 

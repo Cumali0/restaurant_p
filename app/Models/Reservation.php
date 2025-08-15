@@ -38,10 +38,16 @@ class Reservation extends Model
     public const STATUS_REJECTED = 'rejected';
 
 
-    public function orders()
-    {
+    public function orders() {
         return $this->hasMany(Order::class);
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'reservation_id');
+        // veya eğer tablonuz order_items değilse tablo adını kontrol edin
+    }
+
 
 }
 

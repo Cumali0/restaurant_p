@@ -11,22 +11,18 @@ class Order extends Model
 
     protected $fillable = [
         'reservation_id',
-        'menu_id',
-        'quantity',
-        'price',
         'total_price',
-        'order_status',
+        'payment_status',
+        'payment_method',
     ];
 
-    // Reservation ile ilişki
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);
     }
 
-    // Menu ile ilişki
-    public function menu()
-    {
-        return $this->belongsTo(Menu::class);
+    public function orderItems() {
+        return $this->hasMany(OrderItem::class);
     }
+
 }

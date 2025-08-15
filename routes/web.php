@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\Admin\TableController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return view('index'); // resources/views/index.blade.php
@@ -111,12 +112,12 @@ Route::post('/reservation/public', [ReservationController::class, 'storePublic']
 Route::get('/reservation/{id}/preorder', [ReservationController::class, 'preorder'])->name('reservation.preorder');
 
 // Sepete ekleme
-//Route::post('/reservation/{reservation}/add-to-cart', [ReservationController::class, 'addToCart'])->name('reservation.addToCart');
+Route::post('/reservation/{reservation}/add-to-cart', [ReservationController::class,'addToCart'])->name('reservation.addToCart');
 
-// Preorder finalize
-//Route::post('/reservation/{reservation}/finalize-preorder', [ReservationController::class, 'finalizePreorder'])->name('reservation.finalizePreorder');
-
-// Checkout sayfası (ön sipariş sonrası)
-//Route::get('/reservation/{reservation}/checkout', [ReservationController::class, 'checkout'])->name('reservation.checkout');
+// Siparişi Tamamlama
+Route::post('/reservation/{reservation}/finalize-preorder', [ReservationController::class, 'finalizePreorder']);
 
 
+// Checkout (şimdilik pasif, ödeme entegrasyonu gelince açarız)
+// Route::get('/reservation/{reservation}/checkout', [ReservationController::class, 'checkout'])->name('reservation.checkout');
+Route::get('/payment/{order}', [OrderController::class, 'paymentPage'])->name('payment.page');
