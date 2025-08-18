@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationStatusMail;
 use App\Models\Menu;
 use App\Models\Order;
-
+use Illuminate\Support\Str;   // 👈 Bunu ekle
 
 class ReservationController extends Controller
 {
@@ -46,13 +47,15 @@ class ReservationController extends Controller
             'is_preorder' => $request->has('is_preorder'),
             'total_price' => 0,
             'payment_status' => 'unpaid',
+            'preorder_token' => Str::random(32), // random token
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Rezervasyon başarıyla oluşturuldu.',
-            'preorder_url' => route('reservation.preorder', $reservation->id)
+            'preorder_url' => route('reservation.preorder', $reservation->preorder_token)
         ]);
+
     }
 
 
@@ -195,7 +198,8 @@ class ReservationController extends Controller
                 // Eğer ön sipariş seçilmişse, JS’e yönlendirme URL’si gönder
                 if($reservation->is_preorder){
 
-                    $response['preorder_url'] = route('reservation.preorder', $reservation->id);
+                    $response['preorder_url'] = route('reservation.preorder', $reservation->preorder_token);
+
                 }
 
                 return response()->json($response);
@@ -323,70 +327,152 @@ class ReservationController extends Controller
 
 
 
-    public function preorder($reservation_id)
+    public function preorder($token)
     {
-        $reservation = Reservation::findOrFail($reservation_id);
+        $reservation = Reservation::where('preorder_token', $token)->firstOrFail();
         $menus = Menu::where('active', true)->get();
-        $cart = session('cart_'.$reservation_id, []);
+        $cart = session('cart_'.$reservation->id, []);
 
         return view('reservation.preorder', compact('reservation', 'menus', 'cart'));
     }
 
-    public function addToCart(Request $request, $id)
+
+    public function getCart($reservationToken)
     {
-        $cart = session('cart_'.$id, []);
+        $reservation = Reservation::where('preorder_token', $reservationToken)->firstOrFail();
+        $cart = $reservation->cart()->with('items')->first();
 
-        $menuId = $request->menu_id;
-        $quantity = $request->quantity;
+        if (!$cart) {
+            return response()->json(['items' => [], 'total' => 0]);
+        }
 
-        $menu = Menu::find($menuId);
-        if(!$menu) return response()->json(['success' => false]);
+        $items = $cart->items->map(function($i){
+            return [
+                'id' => (string)$i->menu_id, // frontend id string kullanıyor
+                'name' => optional($i->menu)->name,
+                'price' => (float)$i->price,
+                'quantity' => (int)$i->quantity,
+                'total_price' => (float)$i->total_price,
+            ];
+        });
 
-        $cart[$menuId] = [
-            'menu_id' => $menu->id,
-            'name' => $menu->name,
-            'quantity' => $quantity,
-            'price' => $menu->price,
-            'total_price' => $menu->price * $quantity
-        ];
+        $total = $cart->items->sum('total_price');
 
-        session(['cart_'.$id => $cart]);
-
-        return response()->json(['success' => true, 'cart' => $cart]);
+        return response()->json(['items' => $items, 'total' => (float)$total]);
     }
 
-    public function finalizePreorder(Request $request, Reservation $reservation)
-    {
-        $cart = $request->cart;
 
-        if (empty($cart)) {
+
+    // Sepete ürün ekleme
+    public function updateCart(Request $request, $reservationToken)
+    {
+        $reservation = Reservation::where('preorder_token', $reservationToken)->firstOrFail();
+        $dataCart = $request->input('cart', []); // [{id,name,price,quantity}...]
+
+        // cart yoksa oluştur
+        $cart = $reservation->cart()->first();
+        if (!$cart) {
+            $cart = $reservation->cart()->create();
+        }
+
+        // mevcut item’ları önce indexleyelim
+        $existing = $cart->items()->get()->keyBy('menu_id');
+
+        // geleni işle
+        $incomingIds = collect($dataCart)->pluck('id')->map(fn($v)=>(int)$v)->all();
+
+        // silinenleri temizle
+        $cart->items()->whereNotIn('menu_id', $incomingIds)->delete();
+
+        foreach ($dataCart as $row) {
+            $menuId = (int)$row['id'];
+            $qty = max(1, (int)$row['quantity']);
+            $price = (float)$row['price'];
+            $total = $price * $qty;
+
+            if ($existing->has($menuId)) {
+                $existing[$menuId]->update([
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'total_price' => $total,
+                ]);
+            } else {
+                $cart->items()->create([
+                    'menu_id' => $menuId,
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'total_price' => $total,
+                ]);
+            }
+        }
+
+        $sum = $cart->items()->sum('total_price');
+        return response()->json(['message' => 'Sepet güncellendi', 'total' => (float)$sum]);
+    }
+
+
+    public function emptyCart(Request $request, $reservationToken)
+    {
+        $reservation = Reservation::where('preorder_token', $reservationToken)->firstOrFail();
+        $cart = $reservation->cart;
+
+        if ($cart) {
+            $cart->items()->delete();
+            $cart->delete();
+        }
+
+        return response()->json(['message' => 'Sepet temizlendi']);
+    }
+
+
+// Sepetten ürün çıkar
+    public function finalizePreorder(Request $request, $reservationToken)
+    {
+        $reservation = Reservation::where('preorder_token', $reservationToken)->firstOrFail();
+
+        // DB’deki cart üzerinden ilerleyelim (frontend’dekini güvenlik için referans almayalım)
+        $cart = $reservation->cart()->with('items')->first();
+
+        // Eğer istersen, frontend’ten gelen cart ile son senkronu yap:
+        $incoming = $request->input('cart', []);
+        if ($incoming) {
+            // küçük bir reuse
+            $this->updateCart(new Request(['cart' => $incoming]), $reservationToken);
+            $cart = $reservation->cart()->with('items')->first();
+        }
+
+        if (!$cart || $cart->items->isEmpty()) {
             return response()->json(['message' => 'Sepet boş!'], 400);
         }
 
-        // Toplam fiyatı hesapla
-        $totalPrice = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $totalPrice = $cart->items->sum('total_price');
 
-        // Order oluştur
         $order = $reservation->orders()->create([
             'total_price' => $totalPrice,
+            'payment_status' => 'unpaid',
         ]);
 
-        // Order items oluştur
-        foreach($cart as $item){
+        foreach ($cart->items as $ci) {
             $order->orderItems()->create([
-                'menu_id' => $item['id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'total_price' => $item['price'] * $item['quantity'],
+                'menu_id' => $ci->menu_id,
+                'quantity' => $ci->quantity,
+                'price' => $ci->price,
+                'total_price' => $ci->total_price,
             ]);
         }
 
-        // Ödeme sayfasına yönlendirme için JSON ile order ID dönebiliriz
+        // cart’ı temizle
+        $cart->items()->delete();
+        $cart->delete();
+
         return response()->json([
             'message' => 'Ön sipariş başarıyla kaydedildi.',
-            'redirect_url' => route('payment.page', ['order' => $order->id])
+            'redirect_url' => route('payment.page', ['order' => $order->id]),
         ]);
     }
+
+
+
 
 
 

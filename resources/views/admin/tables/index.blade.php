@@ -11,7 +11,6 @@
                         <button class="btn btn-success" onclick="openAddModal()">➕ Yeni Masa Ekle</button>
                     </div>
 
-
                     <form method="GET" action="{{ route('tables.index') }}" class="d-flex gap-2 mb-3 align-items-center">
 
                         <select name="capacity" class="form-control" style="width: 150px;">
@@ -76,8 +75,7 @@
 
                 <!-- Rezervasyon Modal -->
                 <div class="modal" id="reservationsModal" style="display:none;">
-                    <div class="modal-dialog modal-dialog-centered"> <!-- ✅ ortalamak için burası önemli -->
-                    <div class="modal-content" style="max-width: 600px; background:white; padding:15px; border-radius:10px; margin:768px; margin-top:185px; overflow-y: auto; ">
+                    <div class="modal-content" style="max-width: 600px; background:white; padding:15px; border-radius:10px;">
                         <h3 id="reservationsTitle">Rezervasyonlar</h3>
 
                         <form id="reservationFilterForm" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
@@ -97,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-                </div>
+
 
 
 

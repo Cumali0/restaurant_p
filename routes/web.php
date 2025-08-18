@@ -108,16 +108,42 @@ Route::get('/', [MenuController::class, 'index'])->name('home');
 Route::post('/reservation/public', [ReservationController::class, 'storePublic'])
     ->name('reservations.store.public');
 
-// Ön sipariş sayfası
-Route::get('/reservation/{id}/preorder', [ReservationController::class, 'preorder'])->name('reservation.preorder');
+Route::get('/reservation/preorder/{token}', [ReservationController::class, 'preorder'])
+    ->name('reservation.preorder');
+
+Route::get('/reservation/checkout/{token}', [ReservationController::class, 'checkout'])
+    ->name('reservation.checkout');
 
 // Sepete ekleme
 Route::post('/reservation/{reservation}/add-to-cart', [ReservationController::class,'addToCart'])->name('reservation.addToCart');
 
 // Siparişi Tamamlama
-Route::post('/reservation/{reservation}/finalize-preorder', [ReservationController::class, 'finalizePreorder']);
+Route::post('/reservation/{reservationToken}/finalize-preorder', [ReservationController::class, 'finalizePreorder'])
+    ->name('reservation.finalizePreorder');
 
+
+Route::prefix('reservation')->group(function() {
+    // Sepeti güncelle (anlık)
+    Route::post('{reservationToken}/update-cart', [ReservationController::class, 'updateCart'])
+        ->name('reservation.updateCart');
+
+    // Sepeti boşalt
+    Route::post('{reservationToken}/empty-cart', [ReservationController::class, 'emptyCart'])
+        ->name('reservation.emptyCart');
+
+    // Ön siparişi finalize et / order oluştur
+    Route::post('{reservationToken}/finalize-preorder', [ReservationController::class, 'finalizePreorder'])
+        ->name('reservation.finalizePreorder');
+
+    // Opsiyonel: ön sipariş sayfası (Blade)
+    Route::get('{reservationToken}/preorder', [ReservationController::class, 'preorder'])
+        ->name('reservation.preorder');
+});
 
 // Checkout (şimdilik pasif, ödeme entegrasyonu gelince açarız)
 // Route::get('/reservation/{reservation}/checkout', [ReservationController::class, 'checkout'])->name('reservation.checkout');
 Route::get('/payment/{order}', [OrderController::class, 'paymentPage'])->name('payment.page');
+
+
+Route::get('/reservation/{reservationToken}/get-cart', [ReservationController::class, 'getCart'])
+    ->name('reservation.getCart');

@@ -568,7 +568,11 @@
         // -----------------------------
         // Datetimepicker (flatpickr)
         // -----------------------------
-        const datetimeInput = document.getElementById('datetimepicker');
+
+
+
+
+const datetimeInput = document.getElementById('datetimepicker');
         let fpInstance = flatpickr(datetimeInput, {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
@@ -608,7 +612,7 @@
         // Masalar
         // -----------------------------
         const tablesContainer = document.getElementById('tables-container');
-        let selectedTableId = null;
+
 
         function fetchAvailableTables(datetime) {
             const duration = 90;
@@ -679,140 +683,146 @@
 
         clearTables(); // sayfa açılışında
 
-        // -----------------------------
-        // Form submit (tek listener)
-        // -----------------------------
-        const reservationForm = document.getElementById('reservationForm');
-        const preorderCheckbox = document.getElementById('is_preorder');
-        const reservationInput = document.getElementById('reservation_id');
 
-        reservationForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(reservationForm);
+            // -----------------------------
+            // Form submit (tek listener)
+            // -----------------------------
+            const reservationForm = document.getElementById('reservationForm');
+            const preorderCheckbox = document.getElementById('is_preorder');
+            const reservationInput = document.getElementById('reservation_id');
 
-            // Tarih ve masa kontrolü
-            const datetimeValue = (fpInstance && fpInstance.input && fpInstance.input.value)
-                ? fpInstance.input.value.trim()
-                : (document.getElementById('datetimepicker').value || '').trim();
+            let reservationToken = null; // Token dinamik olarak buraya atanacak
 
-            if (!selectedTableId || !datetimeValue) {
-                document.getElementById('reservationResult').innerHTML =
-                    '<p style="color:red;">Lütfen masa ve tarih/saat seçiniz.</p>';
-                return;
-            }
+            reservationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(reservationForm);
 
-            // FormData table_id ve datetime değerlerini güncelle
-            formData.set('table_id', selectedTableId);
-            formData.set('datetime', datetimeValue);
+                // Tarih ve masa kontrolü
+                const datetimeValue = (fpInstance && fpInstance.input && fpInstance.input.value)
+                    ? fpInstance.input.value.trim()
+                    : (document.getElementById('datetimepicker').value || '').trim();
 
-            fetch(reservationForm.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': formData.get('_token') || document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        // Hidden input güncelle
-                        if (reservationInput) {
-                            reservationInput.value = data.preorder_url
-                                ? data.preorder_url.split('/').pop()
-                                : '';
-                        }
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Başarılı!',
-                            text: data.message,
-                            showConfirmButton: false,
-                            timer: 2000
-                        }).then(() => {
-                            if (preorderCheckbox.checked && data.preorder_url) {
-                                window.location.href = data.preorder_url;
-                            } else {
-                                reservationForm.reset();
-                                clearTables();
-                                if (reservationInput) reservationInput.value = '';
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Hata!',
-                            text: data.message || 'Rezervasyon yapılamadı.',
-                            showConfirmButton: true
-                        });
-                    }
-                })
-                .catch(err => {
-                    console.error('AJAX hatası:', err);
+                if (!selectedTableId || !datetimeValue) {
                     document.getElementById('reservationResult').innerHTML =
-                        '<p style="color:red;">Sunucu hatası oluştu. Muhtemelen CSRF veya yönlendirme problemi var.</p>';
-                });
-        });
+                        '<p style="color:red;">Lütfen masa ve tarih/saat seçiniz.</p>';
+                    return;
+                }
 
-        // -----------------------------
-        // Cart / Ön sipariş işlemleri
-        // -----------------------------
-        const cartItems = document.getElementById('cart-items');
-        const cartTotal = document.getElementById('cart-total');
+                formData.set('table_id', selectedTableId);
+                formData.set('datetime', datetimeValue);
 
-        document.querySelectorAll('.add-to-cart').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const menuId = this.dataset.menuId;
-                const quantityInput = document.querySelector(`.menu-quantity[data-menu-id="${menuId}"]`);
-                const quantity = parseInt(quantityInput.value);
-
-                fetch(`/reservation/{{ $reservation->id ?? 0 }}/add-to-cart`, {
+                fetch(reservationForm.action, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'X-CSRF-TOKEN': formData.get('_token') || document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ menu_id: menuId, quantity: quantity })
+                    body: formData
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if(data.success) updateCartDisplay(data.cart);
-                        if(data.preorder_url) window.location.href = data.preorder_url;
+                        if (data.success) {
+                            reservationToken = data.preorder_url ? data.preorder_url.split('/').pop() : null;
+
+                            // Hidden input güncelle
+                            if (reservationInput) reservationInput.value = reservationToken || '';
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Başarılı!',
+                                text: data.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                if (preorderCheckbox.checked && data.preorder_url) {
+                                    window.location.href = data.preorder_url;
+                                } else {
+                                    reservationForm.reset();
+                                    clearTables();
+                                    if (reservationInput) reservationInput.value = '';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hata!',
+                                text: data.message || 'Rezervasyon yapılamadı.',
+                                showConfirmButton: true
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error('AJAX hatası:', err);
+                        document.getElementById('reservationResult').innerHTML =
+                            '<p style="color:red;">Sunucu hatası oluştu. Muhtemelen CSRF veya yönlendirme problemi var.</p>';
                     });
             });
-        });
 
-        function updateCartDisplay(cartData) {
-            cartItems.innerHTML = '';
-            let total = 0;
-            cartData.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item';
-                li.textContent = `${item.name} x${item.quantity} - ${item.total_price}₺`;
-                cartItems.appendChild(li);
-                total += item.total_price;
-            });
-            cartTotal.textContent = total.toFixed(2);
-        }
+            // -----------------------------
+            // Cart / Ön sipariş işlemleri
+            // -----------------------------
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
 
-        const finalizeBtn = document.getElementById('finalize-cart');
-        if (finalizeBtn) {
-            finalizeBtn.addEventListener('click', function() {
-                fetch(`/reservation/0/finalize-preorder`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': 'Z47WcPRjV6PdFPZZGegSFBGpZa9JF6JmdRxqOHGK',
-                        'Accept': 'application/json'
-                    }
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        window.location.href = `/reservation/0/checkout`;
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!reservationToken) return alert('Lütfen önce rezervasyon yapın.');
+
+                    const menuId = this.dataset.menuId;
+                    const quantityInput = document.querySelector(`.menu-quantity[data-menu-id="${menuId}"]`);
+                    const quantity = parseInt(quantityInput.value);
+
+                    fetch(`/reservation/${reservationToken}/add-to-cart`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ menu_id: menuId, quantity: quantity })
                     })
-                    .catch(err => console.error(err));
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) updateCartDisplay(data.cart);
+                            if(data.preorder_url) window.location.href = data.preorder_url;
+                        });
+                });
             });
-        }
+
+            function updateCartDisplay(cartData) {
+                cartItems.innerHTML = '';
+                let total = 0;
+                cartData.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = `${item.name} x${item.quantity} - ${item.total_price}₺`;
+                    cartItems.appendChild(li);
+                    total += item.total_price;
+                });
+                cartTotal.textContent = total.toFixed(2);
+            }
+
+            const finalizeBtn = document.getElementById('finalize-cart');
+            if (finalizeBtn) {
+                finalizeBtn.addEventListener('click', function() {
+                    if (!reservationToken) return alert('Lütfen önce rezervasyon yapın.');
+
+                    fetch(`/reservation/preorder/${reservationToken}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            window.location.href = `/reservation/${reservationToken}/checkout`;
+                        })
+                        .catch(err => console.error(err));
+                });
+            }
+
+
 
     });
 </script>

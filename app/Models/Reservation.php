@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Table;
 
 class Reservation extends Model
 {
@@ -21,6 +20,7 @@ class Reservation extends Model
         'message',
         'status',
         'total_price',
+        'preorder_token'
     ];
 
     protected $casts = [
@@ -44,9 +44,14 @@ class Reservation extends Model
 
     public function orderItems()
     {
-        return $this->hasMany(OrderItem::class, 'reservation_id');
-        // veya eğer tablonuz order_items değilse tablo adını kontrol edin
+        return $this->hasMany(OrderItem::class);
     }
+
+    public function cart(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Cart::class);
+    }
+
 
 
 }

@@ -304,7 +304,7 @@
 <body>
 
 <h2>Ön Sipariş - Rezervasyon <span id="reservation-id"></span></h2>
-<input  type="hidden" id="reservation_id" value="{{ $reservation->id }}">
+<input type="hidden" id="reservation_token" value="{{ $reservation->preorder_token }}">
 
 <div id="filter-container" class="category-bar"></div>
 
@@ -346,33 +346,34 @@
         const cartItems = document.getElementById('cart-items');
         const cartTotal = document.getElementById('cart-total');
         const cartSummary = document.getElementById('cart-summary');
-        const reservationId = document.getElementById('reservation_id').value;
-        const cart = [];
+        const reservationToken = document.getElementById('reservation_token').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        const cart = [];
         const menus = @json($menus);
 
         // Kategori filtreleri
-        const categories = ['Tüm Menü', ...new Set(menus.map(m=>m.category))];
-        categories.forEach(cat=>{
+        const categories = ['Tüm Menü', ...new Set(menus.map(m => m.category))];
+        categories.forEach(cat => {
             const btn = document.createElement('button');
             btn.textContent = cat;
-            btn.className = 'category-btn' + (cat==='Tüm Menü'?' active':'');
-            btn.addEventListener('click', ()=>{
-                document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active'));
+            btn.className = 'category-btn' + (cat === 'Tüm Menü' ? ' active' : '');
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 renderMenus(cat);
             });
             filterContainer.appendChild(btn);
         });
 
-        function renderMenus(category='Tüm Menü'){
-            menuContainer.innerHTML='';
-            menus.forEach(menu=>{
-                if(category!=='Tüm Menü' && menu.category!==category) return;
+        function renderMenus(category = 'Tüm Menü') {
+            menuContainer.innerHTML = '';
+            menus.forEach(menu => {
+                if (category !== 'Tüm Menü' && menu.category !== category) return;
                 const imgUrl = "{{ asset('storage') }}/" + menu.image;
                 const div = document.createElement('div');
-                div.className='menu-item';
-                div.innerHTML=`
+                div.className = 'menu-item';
+                div.innerHTML = `
             <img src="${imgUrl}" alt="${menu.name}">
             <div class="menu-info">
                 <strong>${menu.name}</strong>
@@ -389,56 +390,33 @@
             attachMenuControls();
         }
 
-        function attachMenuControls(){
-            document.querySelectorAll('.add-to-cart').forEach(btn=>{
-                btn.addEventListener('click',function(){
+        function attachMenuControls() {
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function() {
                     const menuItem = this.closest('.menu-item');
-                    const menuId = this.dataset.menuId;
+                    const menuId = parseInt(this.dataset.menuId);
                     const name = menuItem.querySelector('strong').textContent;
-                    const price = parseFloat(menuItem.querySelector('.price').textContent.replace('₺',''));
+                    const price = parseFloat(menuItem.querySelector('.price').textContent.replace('₺', ''));
                     const quantity = parseInt(menuItem.querySelector('.menu-quantity').value);
 
-                    const cartContainer = document.getElementById('cart-container');
-                    const clone = menuItem.cloneNode(true);
-                    clone.style.position='absolute';
-                    const rect = menuItem.getBoundingClientRect();
-                    clone.style.top=rect.top+'px';
-                    clone.style.left=rect.left+'px';
-                    clone.style.width=rect.width+'px';
-                    clone.style.height=rect.height+'px';
-                    clone.style.zIndex=1000;
-                    clone.style.transition='all 0.7s ease-in-out';
-                    document.body.appendChild(clone);
+                    const existing = cart.find(i => i.id === menuId);
+                    if (existing) existing.quantity += quantity;
+                    else cart.push({id: menuId, name, price, quantity});
 
-                    const cartRect = cartContainer.getBoundingClientRect();
-                    setTimeout(()=>{
-                        clone.style.top=(cartRect.top+10)+'px';
-                        clone.style.left=(cartRect.left+10)+'px';
-                        clone.style.width='50px';
-                        clone.style.height='50px';
-                        clone.style.opacity='0.5';
-                    },10);
-
-                    setTimeout(()=>{
-                        document.body.removeChild(clone);
-                        const existing = cart.find(i=>i.id===menuId);
-                        if(existing) existing.quantity += quantity;
-                        else cart.push({id:menuId,name:name,price:price,quantity:quantity});
-                        updateCartDisplay();
-                    },720);
+                    updateCartDisplay();
                 });
             });
 
-            document.querySelectorAll('.increase').forEach(btn=>{
-                btn.addEventListener('click',()=>{
+            document.querySelectorAll('.increase').forEach(btn => {
+                btn.addEventListener('click', () => {
                     const input = btn.previousElementSibling;
-                    input.value = parseInt(input.value)+1;
+                    input.value = parseInt(input.value) + 1;
                 });
             });
-            document.querySelectorAll('.decrease').forEach(btn=>{
-                btn.addEventListener('click',()=>{
+            document.querySelectorAll('.decrease').forEach(btn => {
+                btn.addEventListener('click', () => {
                     const input = btn.nextElementSibling;
-                    input.value = Math.max(1, parseInt(input.value)-1);
+                    input.value = Math.max(1, parseInt(input.value) - 1);
                 });
             });
         }
@@ -447,60 +425,82 @@
             const duration = 300;
             const start = performance.now();
             const diff = newValue - oldValue;
-            function step(timestamp){
-                const progress = Math.min((timestamp-start)/duration,1);
-                const current = oldValue + diff*progress;
+            function step(timestamp) {
+                const progress = Math.min((timestamp - start) / duration, 1);
+                const current = oldValue + diff * progress;
                 cartTotal.textContent = current.toFixed(2);
-                if(progress<1) requestAnimationFrame(step);
+                if (progress < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
         }
 
-        function updateCartDisplay(){
-            cartItems.innerHTML='';
-            cart.forEach((item,index)=>{
+        function syncCartToBackend() {
+            fetch(`/reservation/${reservationToken}/update-cart`, {
+                method: 'POST',
+                headers: {'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json'},
+                body: JSON.stringify({cart})
+            })
+                .then(res => res.json())
+                .then(data => console.log(data.message))
+                .catch(err => console.error(err));
+        }
+
+        function updateCartDisplay() {
+            cartItems.innerHTML = '';
+            cart.forEach((item, index) => {
                 const li = document.createElement('li');
-                li.innerHTML=`
+                li.innerHTML = `
             ${item.name}
             <div class="cart-controls">
                 <button class="decrease" data-index="${index}">-</button>
                 ${item.quantity}
                 <button class="increase" data-index="${index}">+</button>
-                - ${(item.price*item.quantity).toFixed(2)}₺
+                - ${(item.price * item.quantity).toFixed(2)}₺
                 <button class="remove" data-index="${index}">Sil</button>
             </div>`;
                 cartItems.appendChild(li);
             });
 
-            // Toplam ve özet
             const oldTotal = parseFloat(cartTotal.textContent) || 0;
-            const newTotal = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
-            animateTotal(oldTotal,newTotal);
+            const newTotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+            animateTotal(oldTotal, newTotal);
 
-            const totalItems = cart.reduce((sum,i)=>sum+i.quantity,0);
+            const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
             cartSummary.textContent = `${totalItems} ürün, ${newTotal.toFixed(2)}₺`;
 
-            cartItems.querySelectorAll('.increase').forEach(btn=>{
-                btn.addEventListener('click',()=>{ cart[btn.dataset.index].quantity++; updateCartDisplay(); });
-            });
-            cartItems.querySelectorAll('.decrease').forEach(btn=>{
-                btn.addEventListener('click',()=>{
-                    const idx=btn.dataset.index;
-                    if(cart[idx].quantity>1) cart[idx].quantity--;
-                    else cart.splice(idx,1);
+            cartItems.querySelectorAll('.increase').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    cart[btn.dataset.index].quantity++;
                     updateCartDisplay();
                 });
             });
-            cartItems.querySelectorAll('.remove').forEach(btn=>{
-                btn.addEventListener('click',()=>{ cart.splice(btn.dataset.index,1); updateCartDisplay(); });
+            cartItems.querySelectorAll('.decrease').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = btn.dataset.index;
+                    if (cart[idx].quantity > 1) cart[idx].quantity--;
+                    else cart.splice(idx, 1);
+                    updateCartDisplay();
+                });
             });
+            cartItems.querySelectorAll('.remove').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    cart.splice(btn.dataset.index, 1);
+                    updateCartDisplay();
+                });
+            });
+
+            syncCartToBackend();
         }
 
-        document.getElementById('empty-cart').addEventListener('click',()=>{
-            if(cart.length===0) return;
-            if(confirm('Sepeti tamamen boşaltmak istiyor musunuz?')){
-                cart.length=0;
+        document.getElementById('empty-cart').addEventListener('click', () => {
+            if(cart.length === 0) return;
+            if(confirm('Sepeti tamamen boşaltmak istiyor musunuz?')) {
+                cart.length = 0;
                 updateCartDisplay();
+                fetch(`/reservation/${reservationToken}/empty-cart`, {
+                    method: 'POST',
+                    headers: {'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json'}
+                });
             }
         });
 
@@ -512,33 +512,28 @@
         const confirmOrder = document.getElementById('confirm-order');
         const cancelOrder = document.getElementById('cancel-order');
 
-        document.getElementById('finalize-cart').addEventListener('click',()=>{
-            if(cart.length===0){ alert('Sepetiniz boş!'); return; }
-            // Modal içerik
-            modalItems.innerHTML = cart.map(i=>`${i.name} x ${i.quantity} - ${(i.price*i.quantity).toFixed(2)}₺`).join('<br>');
-            const totalPrice = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+        document.getElementById('finalize-cart').addEventListener('click', () => {
+            if(cart.length === 0){ alert('Sepetiniz boş!'); return; }
+            modalItems.innerHTML = cart.map(i => `${i.name} x ${i.quantity} - ${(i.price*i.quantity).toFixed(2)}₺`).join('<br>');
+            const totalPrice = cart.reduce((sum, i) => sum + i.price*i.quantity, 0);
             modalTotal.textContent = `Toplam: ${totalPrice.toFixed(2)}₺`;
             const payment = document.querySelector('input[name="payment"]:checked').value;
             modalPayment.textContent = `Ödeme: ${payment}`;
             modal.style.display='flex';
         });
 
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
         confirmOrder.addEventListener('click', e => {
             e.preventDefault();
             const payment = document.querySelector('input[name="payment"]:checked').value;
-
-            fetch(`/reservation/${reservationId}/finalize-preorder`, {
+            fetch(`/reservation/${reservationToken}/finalize-preorder`, {
                 method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type':'application/json' },
-                body: JSON.stringify({ cart: cart, payment: payment })
+                headers: {'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json'},
+                body: JSON.stringify({cart: cart, payment: payment})
             })
                 .then(res => res.json())
                 .then(data => {
                     if(data.redirect_url){
-                        window.location.href = data.redirect_url; // Ödeme sayfasına yönlendir
+                        window.location.href = data.redirect_url;
                     } else {
                         alert(data.message);
                         cart.length = 0;
@@ -549,13 +544,25 @@
                 .catch(err => console.error(err));
         });
 
+        cancelOrder.addEventListener('click', () => { modal.style.display='none'; });
 
-
-        cancelOrder.addEventListener('click',()=>{ modal.style.display='none'; });
+        // --- YENİ: Backend'den mevcut cart'ı yükle ---
+        function loadCart() {
+            fetch(`/reservation/${reservationToken}/get-cart`)
+                .then(res => res.json())
+                .then(data => {
+                    cart.length = 0;
+                    data.items.forEach(item => cart.push(item));
+                    updateCartDisplay();
+                })
+                .catch(err => console.error(err));
+        }
 
         renderMenus();
+        loadCart(); // <<< sayfa açılınca sepet backend’den yükleniyor
     });
 </script>
+
 
 </body>
 </html>
