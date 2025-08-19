@@ -101,6 +101,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 });
 
 
+Route::post('/reservation/{reservation}/abandon-cart', [ReservationController::class, 'abandonCart']);
+
+Route::post('/reservation/{reservation}/generate-new-token', [ReservationController::class, 'generateNewToken']);
 
 
 Route::get('/', [MenuController::class, 'index'])->name('home');
@@ -147,3 +150,4 @@ Route::get('/payment/{order}', [OrderController::class, 'paymentPage'])->name('p
 
 Route::get('/reservation/{reservationToken}/get-cart', [ReservationController::class, 'getCart'])
     ->name('reservation.getCart');
+

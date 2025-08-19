@@ -304,6 +304,8 @@
 <body>
 
 <h2>Ön Sipariş - Rezervasyon <span id="reservation-id"></span></h2>
+<input type="hidden" id="reservation_id" value="{{ $reservation->id }}">
+
 <input type="hidden" id="reservation_token" value="{{ $reservation->preorder_token }}">
 
 <div id="filter-container" class="category-bar"></div>
@@ -560,6 +562,26 @@
 
         renderMenus();
         loadCart(); // <<< sayfa açılınca sepet backend’den yükleniyor
+        window.addEventListener("beforeunload", function (event) {
+            const reservationId = document.getElementById('reservation_id').value;
+            if (!reservationId) return;
+
+            // Sayfa reload ise tokeni silme
+            if (performance.getEntriesByType("navigation")[0].type === "reload") return;
+
+            // Tokeni silmek için beacon gönder
+            const formData = new FormData();
+            formData.append('reservation_id', reservationId);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+            navigator.sendBeacon(`/reservation/${reservationId}/abandon-cart`, formData);
+
+            // Tarayıcıya kendi mesajımızı vermek istiyoruz
+
+        });
+
+
+
+
     });
 </script>
 

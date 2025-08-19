@@ -14,6 +14,7 @@ use App\Mail\ReservationStatusMail;
 use App\Models\Menu;
 use App\Models\Order;
 use Illuminate\Support\Str;   // 👈 Bunu ekle
+use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
@@ -489,6 +490,41 @@ class ReservationController extends Controller
 
 
 
+
+
+
+// Sayfa kapatıldığında tokeni sil
+    public function abandonCart(Request $request, Reservation $reservation): \Illuminate\Http\JsonResponse
+    {
+
+
+        Log::info('SAA');
+
+
+        $reservation->preorder_token = null;  // Her durumda sil
+        $reservation->save();
+
+        return response()->json(['message' => 'Token silindi.']);
+    }
+
+// Kullanıcı rezervasyon ID ile yeni token almak istediğinde
+    public function generateNewToken(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate(['reservation_id' => 'required|exists:reservations,id']);
+
+        $reservation = Reservation::findOrFail($request->reservation_id);
+        $newToken = Str::random(32);
+        $reservation->preorder_token = $newToken;
+        $reservation->save();
+
+        // Mail gönder
+        Mail::to($reservation->email)->send(new ReservationStatusMail($reservation));
+
+        return response()->json([
+            'message' => 'Yeni token oluşturuldu ve mail gönderildi.',
+            'new_token' => $newToken
+        ]);
+    }
 
 
 
